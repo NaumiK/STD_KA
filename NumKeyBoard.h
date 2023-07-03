@@ -9,7 +9,6 @@
 
 struct NumKeyBoard : public sf::Drawable, public Hoverable {
     sf::Sound m_speaker;
-    sf::SoundBuffer m_sbf;
     std::list<Button> m_buttons;
     virtual void keySignal(uint64_t key) {}
     void keySound(uint64_t key, const std::string &filename_prefix);
@@ -17,7 +16,7 @@ struct NumKeyBoard : public sf::Drawable, public Hoverable {
     NumKeyBoard(uint64_t k, uint64_t cols,
                 const sf::Vector2i &pos0, const sf::Vector2i &distance, const sf::Vector2i &size, const sf::Vector2f &scale,
                 Animation &pressAnim, Animation &releaseAnim,
-                const sf::SoundBuffer &press_s, const sf::SoundBuffer &release_s,
+                const std::string &press_s, const std::string &release_s,
                 const std::string &filename_prefix = "media/audio/c");
     void press(const sf::Vector2i &pos);
     void release(const sf::Vector2i &pos);

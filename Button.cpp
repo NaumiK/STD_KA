@@ -1,20 +1,22 @@
 #include "Button.h"
+#include "AssetManager.h"
 
 #include <utility>
 
 Button::Button(sf::Sprite sprite, sf::IntRect rect, Animation &pressAnim, Animation &releaseAnim,
-               const sf::SoundBuffer &press_s, const sf::SoundBuffer &release_s, std::function<void()> press_f,
+               std::string press_s, std::string release_s, std::function<void()> press_f,
                std::function<void()> release_f)
-   : m_sprite(std::move(sprite)), m_ar(m_sprite),
-       m_press_s{press_s}, m_release_s(release_s), m_rect(rect),
-       m_press_f(std::move(press_f)), m_release_f(std::move(release_f)) {
+        : m_sprite(std::move(sprite)), m_ar(m_sprite),
+          m_press_s{std::move(press_s)}, m_release_s(std::move(release_s)), m_rect(rect),
+          m_press_f(std::move(press_f)), m_release_f(std::move(release_f)) {
     m_ar.addAnimation(pressAnim);
     m_ar.addAnimation(releaseAnim);
 }
 
+
 void Button::press(const sf::Vector2i &pos) {
     if (!m_rect.contains(pos)) return;
-    m_clickSound.setBuffer(m_press_s);
+    m_clickSound.setBuffer(AssetManager::getSoundBuffer(m_press_s));
     m_clickSound.play();
     m_ar.switchAnimation("press");
     m_ar.restart();
@@ -24,7 +26,7 @@ void Button::press(const sf::Vector2i &pos) {
 
 void Button::release(const sf::Vector2i &pos)  {
     if (!m_is_pressed) return;
-    m_clickSound.setBuffer(m_release_s);
+    m_clickSound.setBuffer(AssetManager::getSoundBuffer(m_release_s));
     m_clickSound.play();
     m_ar.switchAnimation("release");
     m_ar.restart();

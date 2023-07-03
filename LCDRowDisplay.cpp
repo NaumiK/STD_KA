@@ -1,23 +1,18 @@
 #include "LCDRowDisplay.h"
 
-LCDRowDisplay::LCDRowDisplay(sf::Sprite bckSprite, const Animation &bckAnim, sf::Text mText, const sf::Font &font,
-                             const std::string &string, uint64_t length, const sf::Time &deltaDuration)
+#include <utility>
+#include "AssetManager.h"
+
+
+LCDRowDisplay::LCDRowDisplay(sf::Sprite bckSprite, const Animation &bckAnim, sf::Text mText, const std::string &string,
+                             uint64_t length, const sf::Time &deltaDuration, std::string font_filename)
         : m_length(length),
           m_bck_sprite(std::move(bckSprite)), m_bck_ar(m_bck_sprite),
-          m_text(std::move(mText)), m_font(font),
+          m_text(std::move(mText)), m_font(std::move(font_filename)),
           m_delta_duration(deltaDuration) {
     set_string(string);
     m_bck_ar.addAnimation(bckAnim);
     standard_user_settings_LCDDisplay(m_text);
-}
-
-LCDRowDisplay::LCDRowDisplay(sf::Sprite bckSprite, const Animation &bckAnim, sf::Text mText, const std::string &string,
-                             uint64_t length, const sf::Time &deltaDuration, const std::string &font_filename)
-        : LCDRowDisplay(std::move(bckSprite), bckAnim,
-                        std::move(mText),
-                        sf::Font(),
-                        string, length, deltaDuration) {
-    m_font.loadFromFile(font_filename);
 }
 
 void LCDRowDisplay::set_string(const std::string &string){
@@ -37,7 +32,7 @@ sf::String LCDRowDisplay::strRowWindow(const std::string &str, uint64_t frame, u
 }
 
 void LCDRowDisplay::standard_user_settings_LCDDisplay(sf::Text &text) const {
-    text.setFont(m_font);
+    text.setFont(AssetManager::getFont(m_font));
     text.setCharacterSize(25);
     text.setLetterSpacing(2);
 }

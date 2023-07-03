@@ -1,8 +1,8 @@
 #include "NumKeyBoard.h"
+#include "AssetManager.h"
 
 void NumKeyBoard::keySound(uint64_t key, const std::string &filename_prefix) {
-    m_sbf.loadFromFile(filename_prefix + std::to_string(key) + ".wav");
-    m_speaker.setBuffer(m_sbf);
+    m_speaker.setBuffer(AssetManager::getSoundBuffer(filename_prefix + std::to_string(key) + ".wav"));
     m_speaker.play();
 }
 
@@ -16,7 +16,7 @@ sf::Vector2i NumKeyBoard::getPosition(uint64_t k, uint64_t cols,
 NumKeyBoard::NumKeyBoard(uint64_t k, uint64_t cols,
                          const sf::Vector2i &pos0, const sf::Vector2i &distance, const sf::Vector2i &size, const sf::Vector2f &scale,
                          Animation &pressAnim, Animation &releaseAnim,
-                         const sf::SoundBuffer &press_s, const sf::SoundBuffer &release_s,
+                         const std::string &press_s, const std::string &release_s,
                          const std::string &filename_prefix) {
     auto [x0, y0] = pos0;
     for (size_t i = 0; i < k; ++i) {

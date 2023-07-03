@@ -1,6 +1,7 @@
 #include "Animator.h"
 #include <algorithm>
 #include <ranges>
+#include "AssetManager.h"
 
 sf::IntRect Animation::get_box(uint64_t cur_frame) const {
     if (total_frame <= cur_frame) throw std::out_of_range("total_frame <= cur_frame");
@@ -8,18 +9,6 @@ sf::IntRect Animation::get_box(uint64_t cur_frame) const {
                          static_cast<int>(cur_frame / columns) * frame_size.y), frame_size};
 }
 
-sf::Image Animation::get_image() const {
-    sf::Image res;
-    res.loadFromFile(texture_path);
-    res.createMaskFromColor(mask_color);
-    return res;
-}
-
-sf::Texture Animation::get_texture(uint64_t cur_frame) const {
-    sf::Texture res;
-    res.loadFromImage(get_image(), get_box(cur_frame));
-    return res;
-}
 ///////////////////////////////////////////////////////
 Animator::Animator(sf::Sprite &sprite)
     : m_sprite(sprite) {}
@@ -32,8 +21,8 @@ Animation *Animator::findAnimation(const std::string &name) {
 
 void Animator::switchAnimation(Animation *anim) {
     if (anim != nullptr) {
-        m_tex.loadFromImage(anim->get_image());
-        m_sprite.setTexture(m_tex);
+//        m_tex.loadFromImage(anim->get_image());
+        m_sprite.setTexture(AssetManager::getTexture(anim->texture_path, anim->mask_color));
     }
     current_anim = anim;
     current_time = sf::Time::Zero;

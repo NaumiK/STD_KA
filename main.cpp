@@ -5,8 +5,12 @@
 #include "NumKeyBoard.h"
 #include "LCDRowDisplay.h"
 #include "UserCursor.h"
+#include <map>
+#include "AssetManager.h"
+
 
 int main() {
+    auto am = AssetManager::getInstance();
     Animation b1_1 = {"press", "media/images/b1_1.png",
                       17, 5,
                       {100, 50}, sf::seconds(0.8),
@@ -23,17 +27,12 @@ int main() {
                       9, 3,
                       sf::Vector2i(64, 81), sf::seconds(0.4),
                       sf::Color(0, 255, 0), false};
-    sf::RenderWindow window(sf::VideoMode(800, 800), "Test button",
+    sf::RenderWindow window(sf::VideoMode(800, 800), "Test Manager",
                             sf::Style::Titlebar | sf::Style::Close);
     window.setMouseCursorVisible(false);
 
-    sf::SoundBuffer buffer11, buffer12;
-    buffer11.loadFromFile("media/audio/p2_1.wav");
-    buffer12.loadFromFile("media/audio/p2_2.wav");
-    sf::SoundBuffer buffer1, buffer2;
-    buffer1.loadFromFile("media/audio/p1_1.wav");
-    buffer2.loadFromFile("media/audio/p1_2.wav");
-    NumKeyBoard keyBoard(10, 3, {0,100}, {5, 20}, {100, 50}, {2, 2}, b1_1, b1_2, buffer1, buffer2);
+    NumKeyBoard keyBoard(10, 3, {0,100}, {5, 20}, {100, 50}, {2, 2},
+                         b1_1, b1_2, "media/audio/p1_1.wav", "media/audio/p1_2.wav");
     LCDRowDisplay lcdRowDisplay(sf::Sprite(), b1_2, sf::Text(), "Insert money and choose your drink :)", 16);
     lcdRowDisplay.m_text.setPosition(20, 10);
     lcdRowDisplay.m_bck_sprite.setPosition(10, 0);
@@ -41,11 +40,9 @@ int main() {
 
     sf::Clock clock;
     sf::Sound sound;
-    sf::SoundBuffer buffer;
     UserCursor cursor;
     cursor.m_hover_objects.push_back(&keyBoard);
-    buffer.loadFromFile("media/audio/done.wav");
-    sound.setBuffer(buffer);
+    sound.setBuffer(AssetManager::getSoundBuffer("media/audio/done.wav"));
     while (window.isOpen()) {
         auto dt = clock.restart();
         sf::Event event{};
@@ -84,5 +81,6 @@ int main() {
         cursor.draw(window);
         window.display();
     }
+    delete am;
     return 0;
 }

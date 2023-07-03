@@ -14,8 +14,6 @@ struct Animation {
     sf::Color mask_color;
     bool isLoop;
     sf::IntRect get_box(uint64_t cur_frame) const;
-    sf::Image get_image() const;
-    sf::Texture get_texture(uint64_t cur_frame) const;
 };
 
 struct Animator {
@@ -23,7 +21,6 @@ struct Animator {
     sf::Time current_time;
     std::list<Animation> m_animations;
     Animation *current_anim = nullptr;
-    sf::Texture m_tex;
     bool endAnim = true;
     explicit Animator(sf::Sprite &sprite);
     Animation *findAnimation(const std::string &name);
