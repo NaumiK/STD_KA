@@ -21,8 +21,8 @@ struct NumKeyBoard : public sf::Drawable, public Hoverable {
     void press(const sf::Vector2i &pos);
     void release(const sf::Vector2i &pos);
     void update(const sf::Time &dt);
-    bool contains(const sf::Vector2i &vr) const;
-    bool hover(const sf::Vector2i &vr) const override;
+    bool contains(const sf::Vector2i &vr) const override;
+    void hover(const sf::Vector2i &vr) override;
 private:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 };

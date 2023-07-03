@@ -1,13 +1,42 @@
-//#include <iostream>
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include "Animator.h"
 #include "NumKeyBoard.h"
 #include "LCDRowDisplay.h"
 #include "UserCursor.h"
-#include <map>
+#include <utility>
 #include "AssetManager.h"
 
+struct TextButton : public Button {
+    sf::Text m_text;
+    std::string m_font;
+    TextButton(sf::Sprite sprite, sf::IntRect rect, sf::Text text,
+               Animation &pressAnim, Animation &releaseAnim,
+               std::string press_s, std::string release_s,
+               std::function<void()> press_f = []() {}, std::function<void()> release_f = []() {},
+               std::string  font="media/EpilepsySans.ttf") :
+                       Button(std::move(sprite), rect,
+                              pressAnim, releaseAnim,
+                              std::move(press_s), std::move(release_s),
+                              std::move(press_f), std::move(release_f)),
+                              m_text(std::move(text)), m_font(std::move(font)) {
+    }
+    void standard_text(sf::Text &text) const {
+        text.setFont(AssetManager::getFont(m_font));
+        text.setCharacterSize(25);
+    }
+    void hover(const sf::Vector2i &vr) override {
+        if (contains(vr))
+            m_text.setStyle(sf::Text::Bold);
+        else
+            m_text.setStyle(sf::Text::Regular);
+    }
+private:
+    void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
+        target.draw(m_sprite);
+        target.draw(m_text);
+    }
+};
 
 int main() {
     auto am = AssetManager::getInstance();
@@ -33,15 +62,23 @@ int main() {
 
     NumKeyBoard keyBoard(10, 3, {0,100}, {5, 20}, {100, 50}, {2, 2},
                          b1_1, b1_2, "media/audio/p1_1.wav", "media/audio/p1_2.wav");
-    LCDRowDisplay lcdRowDisplay(sf::Sprite(), b1_2, sf::Text(), "Insert money and choose your drink :)", 16);
+    LCDRowDisplay lcdRowDisplay(sf::Sprite(), {}, sf::Text(), "Insert money and choose your drink :)", 16);
     lcdRowDisplay.m_text.setPosition(20, 10);
     lcdRowDisplay.m_bck_sprite.setPosition(10, 0);
     lcdRowDisplay.scale({2, 2});
+    lcdRowDisplay.standard_user_settings_LCDDisplay(lcdRowDisplay.m_text);
+    TextButton tb(sf::Sprite(), {0, 600, 100, 50}, sf::Text(), b1_1, b1_2, "media/audio/p2_1.wav", "media/audio/p2_2.wav");
+    tb.standard_text(tb.m_text);
+    tb.setPosition(0, 600);
+    tb.m_text.setPosition(40, 610);
+    tb.m_text.setString(L":)");
 
     sf::Clock clock;
     sf::Sound sound;
     UserCursor cursor;
     cursor.m_hover_objects.push_back(&keyBoard);
+    cursor.m_hover_objects.push_back(&tb);
+
     sound.setBuffer(AssetManager::getSoundBuffer("media/audio/done.wav"));
     while (window.isOpen()) {
         auto dt = clock.restart();
@@ -53,9 +90,11 @@ int main() {
                     break;
                 case sf::Event::MouseButtonPressed:
                     keyBoard.press(sf::Mouse::getPosition(window));
+                    tb.press(sf::Mouse::getPosition(window));
                     break;
                 case sf::Event::MouseButtonReleased:
                     keyBoard.release(sf::Mouse::getPosition(window));
+                    tb.release(sf::Mouse::getPosition(window));
                     break;
                 case sf::Event::KeyPressed:
                     sound.play();
@@ -64,21 +103,19 @@ int main() {
                     break;
             }
         }
-        auto [x, y] = sf::Mouse::getPosition(window);
-        if (lcdRowDisplay.m_text.getGlobalBounds().contains({(float)x, (float)y})) {
-            lcdRowDisplay.m_text.setFillColor(sf::Color::Red);
-            lcdRowDisplay.m_text.setStyle(sf::Text::Underlined);
-        }
-        else {
-           lcdRowDisplay.m_text.setFillColor(sf::Color::White);
-           lcdRowDisplay.m_text.setStyle(sf::Text::Regular);
-        }
+        cursor.hover(window);
+
         window.clear();
+
         keyBoard.update(dt);
         lcdRowDisplay.update(dt);
+        tb.m_ar.update(dt);
+
         window.draw(keyBoard);
         window.draw(lcdRowDisplay);
+        window.draw(tb);
         cursor.draw(window);
+
         window.display();
     }
     delete am;

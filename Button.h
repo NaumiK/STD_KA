@@ -25,8 +25,8 @@ struct Button : public sf::Drawable, public Hoverable {
     void setPosition(int x, int y);
     void setPosition(const sf::Vector2i &pos);
     void scale(const sf::Vector2f &factor);
-    bool contains(const sf::Vector2i &vr) const;
-    bool hover(const sf::Vector2i &vr) const override;
+    bool contains(const sf::Vector2i &vr) const override;
+    void hover(const sf::Vector2i &vr) override;
 private:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 };

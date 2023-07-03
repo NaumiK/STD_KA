@@ -12,7 +12,6 @@ LCDRowDisplay::LCDRowDisplay(sf::Sprite bckSprite, const Animation &bckAnim, sf:
           m_delta_duration(deltaDuration) {
     set_string(string);
     m_bck_ar.addAnimation(bckAnim);
-    standard_user_settings_LCDDisplay(m_text);
 }
 
 void LCDRowDisplay::set_string(const std::string &string){

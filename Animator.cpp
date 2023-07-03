@@ -60,7 +60,7 @@ void Animator::restart() {
 }
 
 void Animator::update(const sf::Time &dt) {
-    if (current_anim == nullptr) return;
+    if (current_anim == nullptr || current_anim->texture_path.empty()) return;
     if (!endAnim) current_time += dt;
     float scaledTime = (current_time.asSeconds() / current_anim->duration_.asSeconds());
     uint64_t cur_frame = scaledTime * current_anim->total_frame;

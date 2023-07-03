@@ -58,6 +58,4 @@ bool Button::contains(const sf::Vector2i &vr) const {
     return m_rect.contains(vr);
 }
 
-bool Button::hover(const sf::Vector2i &vr) const {
-    return contains(vr);
-}
+void Button::hover(const sf::Vector2i &vr) { }

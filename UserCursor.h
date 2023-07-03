@@ -12,10 +12,11 @@ struct UserCursor {
             {"media/images/cursor/Point.png", {-18, -12}},
             {"media/images/cursor/ClosedArm.png", {-25, -25}}
     };
-    std::list<const Hoverable *> m_hover_objects;
+    std::list<Hoverable *> m_hover_objects;
 
     UserCursor() = default;
 
+    void hover(sf::RenderWindow &win);
     void draw(sf::RenderWindow &win);
 };
 

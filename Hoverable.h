@@ -4,7 +4,8 @@
 #include <SFML/System.hpp>
 
 struct Hoverable {
-    virtual bool hover(const sf::Vector2i &vr) const = 0;
+    virtual void hover(const sf::Vector2i &vr) = 0;
+    virtual bool contains(const sf::Vector2i &vr) const = 0;
 };
 
 #endif //STD_PRJ_HOVERABLE_H
