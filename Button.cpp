@@ -15,7 +15,7 @@ Button::Button(sf::Sprite sprite, sf::IntRect rect, Animation &pressAnim, Animat
 
 
 void Button::press(const sf::Vector2i &pos) {
-    if (!m_rect.contains(pos)) return;
+    if (!m_rect.contains(pos) || m_is_pressed) return;
     m_clickSound.setBuffer(AssetManager::getSoundBuffer(m_press_s));
     m_clickSound.play();
     m_ar.switchAnimation("press");

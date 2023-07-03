@@ -8,7 +8,7 @@
 #include <functional>
 #include "Hoverable.h"
 
-struct Button : public sf::Drawable, public Hoverable {
+struct Button : public sf::Drawable, public PressHoverable {
     sf::Sprite m_sprite;
     sf::IntRect m_rect;
     Animator m_ar;
@@ -20,8 +20,8 @@ struct Button : public sf::Drawable, public Hoverable {
            Animation &pressAnim, Animation &releaseAnim,
            std::string press_s, std::string release_s,
            std::function<void()> press_f = [](){}, std::function<void()> release_f = [](){});
-    void press(const sf::Vector2i &pos);
-    void release(const sf::Vector2i &pos);
+    void press(const sf::Vector2i &pos) override;
+    void release(const sf::Vector2i &pos) override;
     void setPosition(int x, int y);
     void setPosition(const sf::Vector2i &pos);
     void scale(const sf::Vector2f &factor);

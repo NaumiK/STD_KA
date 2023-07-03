@@ -13,10 +13,17 @@ struct UserCursor {
             {"media/images/cursor/ClosedArm.png", {-25, -25}}
     };
     std::list<Hoverable *> m_hover_objects;
+    std::list<PressHoverable *> m_press_objects;
+    std::list<PressHoverable *> m_release_objects;
 
     UserCursor() = default;
 
     void hover(sf::RenderWindow &win);
+    void press(sf::RenderWindow &win);
+    void release(sf::RenderWindow &win);
+
+    void add(PressHoverable *ph, bool hover = true, bool press = true, bool release = true);
+
     void draw(sf::RenderWindow &win);
 };
 

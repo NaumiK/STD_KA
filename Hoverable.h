@@ -8,4 +8,9 @@ struct Hoverable {
     virtual bool contains(const sf::Vector2i &vr) const = 0;
 };
 
+struct PressHoverable : public Hoverable {
+    virtual void press(const sf::Vector2i &vr) = 0;
+    virtual void release(const sf::Vector2i &vr) = 0;
+};
+
 #endif //STD_PRJ_HOVERABLE_H

@@ -18,3 +18,21 @@ void UserCursor::hover(sf::RenderWindow &win) {
     for (auto &i: m_hover_objects)
         i->hover(pos);
 }
+
+void UserCursor::press(sf::RenderWindow &win) {
+    auto pos = sf::Mouse::getPosition(win);
+    for (auto &i: m_press_objects)
+        i->press(pos);
+}
+
+void UserCursor::release(sf::RenderWindow &win) {
+    auto pos = sf::Mouse::getPosition(win);
+    for (auto &i: m_release_objects)
+        i->release(pos);
+}
+
+void UserCursor::add(PressHoverable *ph, bool h, bool p, bool r) {
+    if (h) m_hover_objects.push_back(ph);
+    if (p) m_press_objects.push_back(ph);
+    if (r) m_release_objects.push_back(ph);
+}

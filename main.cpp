@@ -76,8 +76,8 @@ int main() {
     sf::Clock clock;
     sf::Sound sound;
     UserCursor cursor;
-    cursor.m_hover_objects.push_back(&keyBoard);
-    cursor.m_hover_objects.push_back(&tb);
+    cursor.add(&keyBoard);
+    cursor.add(&tb, true, true, false);
 
     sound.setBuffer(AssetManager::getSoundBuffer("media/audio/done.wav"));
     while (window.isOpen()) {
@@ -89,12 +89,10 @@ int main() {
                     window.close();
                     break;
                 case sf::Event::MouseButtonPressed:
-                    keyBoard.press(sf::Mouse::getPosition(window));
-                    tb.press(sf::Mouse::getPosition(window));
+                    cursor.press(window);
                     break;
                 case sf::Event::MouseButtonReleased:
-                    keyBoard.release(sf::Mouse::getPosition(window));
-                    tb.release(sf::Mouse::getPosition(window));
+                    cursor.release(window);
                     break;
                 case sf::Event::KeyPressed:
                     sound.play();
