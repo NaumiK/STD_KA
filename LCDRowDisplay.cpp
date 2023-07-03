@@ -1,7 +1,3 @@
-//
-// Created by danii on 03.07.2023.
-//
-
 #include "LCDRowDisplay.h"
 
 LCDRowDisplay::LCDRowDisplay(sf::Sprite bckSprite, const Animation &bckAnim, sf::Text mText, const sf::Font &font,

@@ -5,8 +5,9 @@
 #include <SFML/Audio.hpp>
 #include <list>
 #include "Button.h"
+#include "Hoverable.h"
 
-struct NumKeyBoard : public sf::Drawable {
+struct NumKeyBoard : public sf::Drawable, public Hoverable {
     sf::Sound m_speaker;
     sf::SoundBuffer m_sbf;
     std::list<Button> m_buttons;
@@ -21,7 +22,8 @@ struct NumKeyBoard : public sf::Drawable {
     void press(const sf::Vector2i &pos);
     void release(const sf::Vector2i &pos);
     void update(const sf::Time &dt);
-    bool contains(const sf::Vector2i &vr);
+    bool contains(const sf::Vector2i &vr) const;
+    bool hover(const sf::Vector2i &vr) const override;
 private:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 };

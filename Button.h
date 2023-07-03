@@ -6,8 +6,9 @@
 #include <SFML/Audio.hpp>
 #include "Animator.h"
 #include <functional>
+#include "Hoverable.h"
 
-struct Button : public sf::Drawable {
+struct Button : public sf::Drawable, public Hoverable {
     sf::Sprite m_sprite;
     sf::IntRect m_rect;
     Animator m_ar;
@@ -24,6 +25,8 @@ struct Button : public sf::Drawable {
     void setPosition(int x, int y);
     void setPosition(const sf::Vector2i &pos);
     void scale(const sf::Vector2f &factor);
+    bool contains(const sf::Vector2i &vr) const;
+    bool hover(const sf::Vector2i &vr) const override;
 private:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 };

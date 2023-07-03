@@ -52,3 +52,10 @@ void Button::scale(const sf::Vector2f &factor) {
     m_rect = {m_rect.getPosition(), {static_cast<int>(sz.x * factor.x), static_cast<int>(sz.y * factor.y)}};
 }
 
+bool Button::contains(const sf::Vector2i &vr) const {
+    return m_rect.contains(vr);
+}
+
+bool Button::hover(const sf::Vector2i &vr) const {
+    return contains(vr);
+}

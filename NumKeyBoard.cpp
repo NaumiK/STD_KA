@@ -56,6 +56,10 @@ void NumKeyBoard::draw(sf::RenderTarget &target, sf::RenderStates states) const 
         target.draw(i, states);
 }
 
-bool NumKeyBoard::contains(const sf::Vector2i &vr) {
+bool NumKeyBoard::contains(const sf::Vector2i &vr) const {
     return std::ranges::any_of(m_buttons, [&vr](auto &b){return b.m_rect.contains(vr);});
+}
+
+bool NumKeyBoard::hover(const sf::Vector2i &vr) const {
+    return contains(vr);
 }

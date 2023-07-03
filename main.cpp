@@ -1,9 +1,10 @@
-#include <iostream>
+//#include <iostream>
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include "Animator.h"
 #include "NumKeyBoard.h"
 #include "LCDRowDisplay.h"
+#include "UserCursor.h"
 
 int main() {
     Animation b1_1 = {"press", "media/images/b1_1.png",
@@ -24,6 +25,7 @@ int main() {
                       sf::Color(0, 255, 0), false};
     sf::RenderWindow window(sf::VideoMode(800, 800), "Test button",
                             sf::Style::Titlebar | sf::Style::Close);
+    window.setMouseCursorVisible(false);
 
     sf::SoundBuffer buffer11, buffer12;
     buffer11.loadFromFile("media/audio/p2_1.wav");
@@ -40,6 +42,8 @@ int main() {
     sf::Clock clock;
     sf::Sound sound;
     sf::SoundBuffer buffer;
+    UserCursor cursor;
+    cursor.m_hover_objects.push_back(&keyBoard);
     buffer.loadFromFile("media/audio/done.wav");
     sound.setBuffer(buffer);
     while (window.isOpen()) {
@@ -77,6 +81,7 @@ int main() {
         lcdRowDisplay.update(dt);
         window.draw(keyBoard);
         window.draw(lcdRowDisplay);
+        cursor.draw(window);
         window.display();
     }
     return 0;
