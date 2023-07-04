@@ -15,7 +15,7 @@ struct NumKeyBoard : public sf::Drawable, public PressHoverable {
     static sf::Vector2i getPosition(uint64_t k, uint64_t cols, const sf::Vector2i &distance, const sf::Vector2i &size, const sf::Vector2f &scale);
     NumKeyBoard(uint64_t k, uint64_t cols,
                 const sf::Vector2i &pos0, const sf::Vector2i &distance, const sf::Vector2i &size, const sf::Vector2f &scale,
-                Animation &pressAnim, Animation &releaseAnim,
+                const Animation &hoverAnim, const Animation &pressAnim, const Animation &releaseAnim,
                 const std::string &press_s, const std::string &release_s,
                 const std::string &filename_prefix = "media/audio/c");
     void press(const sf::Vector2i &pos) override;

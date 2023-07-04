@@ -15,14 +15,14 @@ sf::Vector2i NumKeyBoard::getPosition(uint64_t k, uint64_t cols,
 
 NumKeyBoard::NumKeyBoard(uint64_t k, uint64_t cols,
                          const sf::Vector2i &pos0, const sf::Vector2i &distance, const sf::Vector2i &size, const sf::Vector2f &scale,
-                         Animation &pressAnim, Animation &releaseAnim,
+                         const Animation &hoverAnim, const Animation &pressAnim, const Animation &releaseAnim,
                          const std::string &press_s, const std::string &release_s,
                          const std::string &filename_prefix) {
     auto [x0, y0] = pos0;
     for (size_t i = 0; i < k; ++i) {
         auto [x, y] = getPosition(i - 1, cols, distance, size, scale);
         m_buttons.emplace_back(sf::Sprite(), sf::IntRect({x + x0, y + y0}, size),
-                               pressAnim, releaseAnim,
+                               hoverAnim, pressAnim, releaseAnim,
                                press_s, release_s,
                                [](){}, [&, i, filename_prefix](){
                     keySound(i, filename_prefix);
@@ -60,4 +60,7 @@ bool NumKeyBoard::contains(const sf::Vector2i &vr) const {
     return std::ranges::any_of(m_buttons, [&vr](auto &b){return b.m_rect.contains(vr);});
 }
 
-void NumKeyBoard::hover(const sf::Vector2i &vr) { }
+void NumKeyBoard::hover(const sf::Vector2i &vr) {
+    for (auto &i: m_buttons)
+        i.hover(vr);
+}

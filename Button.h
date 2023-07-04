@@ -15,9 +15,9 @@ struct Button : public sf::Drawable, public PressHoverable {
     sf::Sound m_clickSound;
     std::string m_press_s, m_release_s;
     std::function<void()> m_press_f, m_release_f;
-    bool m_is_pressed = false;
+    uint8_t m_status = 0;
     Button(sf::Sprite sprite, sf::IntRect rect,
-           const Animation &pressAnim, const Animation &releaseAnim,
+           const Animation &hoverAnim, const Animation &pressAnim, const Animation &releaseAnim,
            std::string press_s, std::string release_s,
            std::function<void()> press_f = [](){}, std::function<void()> release_f = [](){});
     void press(const sf::Vector2i &pos) override;
