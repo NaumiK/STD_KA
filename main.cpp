@@ -7,47 +7,8 @@
 #include <utility>
 #include <iostream>
 #include "AssetManager.h"
+#include "TextButton.h"
 
-struct TextButton : public Button {
-    sf::Text m_text;
-    std::string m_font;
-    Animation hover_anim;
-    TextButton(sf::Sprite sprite, sf::IntRect rect, sf::Text text,
-               const Animation &hoverAnim, const Animation &pressAnim, const Animation &releaseAnim,
-               std::string press_s, std::string release_s,
-               std::function<void()> press_f = []() {}, std::function<void()> release_f = []() {},
-               std::string  font="media/EpilepsySans.ttf") :
-                       Button(std::move(sprite), rect,
-                              hoverAnim, pressAnim, releaseAnim,
-                              std::move(press_s), std::move(release_s),
-                              std::move(press_f), std::move(release_f)),
-                              m_text(std::move(text)), m_font(std::move(font)) {
-    }
-    void standard_text(sf::Text &text) const {
-        text.setFont(AssetManager::getFont(m_font));
-        text.setCharacterSize(25);
-    }
-    void hover(const sf::Vector2i &vr) override {
-        Button::hover(vr);
-        if(m_status == 1) m_text.setStyle(sf::Text::Bold);
-        else m_text.setStyle(sf::Text::Regular);
-    }
-    void press(const sf::Vector2i &pos) override {
-        if (!contains(pos) || m_status == 2) return;
-        Button::press(pos);
-        m_text.setFillColor(sf::Color::Red);
-    }
-    void release(const sf::Vector2i &pos) override {
-        if (m_status != 2) return;
-        Button::release(pos);
-        m_text.setFillColor(sf::Color::White);
-    }
-private:
-    void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
-        target.draw(m_sprite);
-        target.draw(m_text);
-    }
-};
 
 int main() {
     auto am = AssetManager::getInstance();
@@ -76,13 +37,14 @@ int main() {
     window.setMouseCursorVisible(false);
 
     NumKeyBoard keyBoard(10, 3, {0,100}, {5, 20}, {100, 50}, {2, 2},
-                         b1_0, b1_1, b1_2, "media/audio/p1_1.wav", "media/audio/p1_2.wav");
+                         b1_0, b1_1, b1_2, "media/audio/p2_1.wav", "media/audio/p2_2.wav", "media/audio/p1_1.wav", "media/audio/p1_2.wav");
     LCDRowDisplay lcdRowDisplay(sf::Sprite(), {}, sf::Text(), "Insert money and choose your drink :)", 16);
     lcdRowDisplay.m_text.setPosition(20, 10);
     lcdRowDisplay.m_bck_sprite.setPosition(10, 0);
     lcdRowDisplay.scale({2, 2});
     lcdRowDisplay.standard_user_settings_LCDDisplay(lcdRowDisplay.m_text);
-    TextButton tb(sf::Sprite(), {0, 600, 100, 50}, sf::Text(), b1_0, b1_1, b1_2, "media/audio/p2_1.wav", "media/audio/p2_2.wav");
+    TextButton tb(sf::Sprite(), {0, 600, 100, 50}, sf::Text(), b1_0, b1_1, b1_2,
+                  "media/audio/mouse_hover.ogg", "media/audio/mouse_hover.ogg", "media/audio/click_to_start.ogg", "media/audio/p2_2.wav");
     tb.m_ar.addAnimation(tb.hover_anim);
     tb.standard_text(tb.m_text);
     tb.setPosition(0, 600);

@@ -16,18 +16,18 @@ sf::Vector2i NumKeyBoard::getPosition(uint64_t k, uint64_t cols,
 NumKeyBoard::NumKeyBoard(uint64_t k, uint64_t cols,
                          const sf::Vector2i &pos0, const sf::Vector2i &distance, const sf::Vector2i &size, const sf::Vector2f &scale,
                          const Animation &hoverAnim, const Animation &pressAnim, const Animation &releaseAnim,
-                         const std::string &press_s, const std::string &release_s,
+                         const std::string& hover_s, const std::string& unhover_s, const std::string& press_s, const std::string& release_s,
                          const std::string &filename_prefix) {
     auto [x0, y0] = pos0;
     for (size_t i = 0; i < k; ++i) {
         auto [x, y] = getPosition(i - 1, cols, distance, size, scale);
         m_buttons.emplace_back(sf::Sprite(), sf::IntRect({x + x0, y + y0}, size),
                                hoverAnim, pressAnim, releaseAnim,
-                               press_s, release_s,
-                               [](){}, [&, i, filename_prefix](){
-                    keySound(i, filename_prefix);
-                    keySignal(i);
-                }
+                               hover_s, unhover_s, press_s, release_s,
+                               [](){}, [](){}, [](){}, [&, i, filename_prefix](){
+                                   keySound(i, filename_prefix);
+                                   keySignal(i);
+                               }
         );
         m_buttons.back().m_sprite.setPosition(x + x0, y + y0);
         m_buttons.back().scale(scale);

@@ -13,12 +13,13 @@ struct Button : public sf::Drawable, public PressHoverable {
     sf::IntRect m_rect;
     Animator m_ar;
     sf::Sound m_clickSound;
-    std::string m_press_s, m_release_s;
-    std::function<void()> m_press_f, m_release_f;
+    std::string m_hover_s, m_unhover_s, m_press_s, m_release_s;
+    std::function<void()> m_hover_f, m_unhover_f, m_press_f, m_release_f;
     uint8_t m_status = 0;
     Button(sf::Sprite sprite, sf::IntRect rect,
            const Animation &hoverAnim, const Animation &pressAnim, const Animation &releaseAnim,
-           std::string press_s, std::string release_s,
+           std::string hover_s="", std::string unhover_s = "", std::string press_s="", std::string release_s="",
+           std::function<void()> hover_f = [](){}, std::function<void()> unhover_f=[](){},
            std::function<void()> press_f = [](){}, std::function<void()> release_f = [](){});
     void press(const sf::Vector2i &pos) override;
     void release(const sf::Vector2i &pos) override;
