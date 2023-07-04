@@ -3,7 +3,7 @@
 
 #include <utility>
 
-Button::Button(sf::Sprite sprite, sf::IntRect rect, Animation &pressAnim, Animation &releaseAnim,
+Button::Button(sf::Sprite sprite, sf::IntRect rect, const Animation &pressAnim, const Animation &releaseAnim,
                std::string press_s, std::string release_s, std::function<void()> press_f,
                std::function<void()> release_f)
         : m_sprite(std::move(sprite)), m_ar(m_sprite),

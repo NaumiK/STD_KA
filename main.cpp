@@ -11,7 +11,7 @@ struct TextButton : public Button {
     sf::Text m_text;
     std::string m_font;
     TextButton(sf::Sprite sprite, sf::IntRect rect, sf::Text text,
-               Animation &pressAnim, Animation &releaseAnim,
+               const Animation &pressAnim, const Animation &releaseAnim,
                std::string press_s, std::string release_s,
                std::function<void()> press_f = []() {}, std::function<void()> release_f = []() {},
                std::string  font="media/EpilepsySans.ttf") :
@@ -30,6 +30,16 @@ struct TextButton : public Button {
             m_text.setStyle(sf::Text::Bold);
         else
             m_text.setStyle(sf::Text::Regular);
+    }
+    void press(const sf::Vector2i &pos) override {
+        if (!contains(pos) || m_is_pressed) return;
+        Button::press(pos);
+        m_text.setFillColor(sf::Color::Red);
+    }
+    void release(const sf::Vector2i &pos) override {
+        if (!m_is_pressed) return;
+        Button::release(pos);
+        m_text.setFillColor(sf::Color::White);
     }
 private:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override {
@@ -96,6 +106,7 @@ int main() {
                     break;
                 case sf::Event::KeyPressed:
                     sound.play();
+                    tb.release(tb.m_rect.getPosition());
                     break;
                 default:
                     break;

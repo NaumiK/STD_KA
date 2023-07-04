@@ -17,7 +17,7 @@ struct Button : public sf::Drawable, public PressHoverable {
     std::function<void()> m_press_f, m_release_f;
     bool m_is_pressed = false;
     Button(sf::Sprite sprite, sf::IntRect rect,
-           Animation &pressAnim, Animation &releaseAnim,
+           const Animation &pressAnim, const Animation &releaseAnim,
            std::string press_s, std::string release_s,
            std::function<void()> press_f = [](){}, std::function<void()> release_f = [](){});
     void press(const sf::Vector2i &pos) override;

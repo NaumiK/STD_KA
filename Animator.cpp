@@ -20,8 +20,7 @@ Animation *Animator::findAnimation(const std::string &name) {
 }
 
 void Animator::switchAnimation(Animation *anim) {
-    if (anim != nullptr) {
-//        m_tex.loadFromImage(anim->get_image());
+    if (anim != nullptr && !anim->texture_path.empty()) {
         m_sprite.setTexture(AssetManager::getTexture(anim->texture_path, anim->mask_color));
     }
     current_anim = anim;
@@ -55,6 +54,7 @@ Animation &Animator::addAnimation(const Animation &anim) {
 }
 
 void Animator::restart() {
+    if (current_anim == nullptr || current_anim->texture_path.empty()) return;
     current_time = sf::Time::Zero;
     endAnim = false;
 }
