@@ -14,5 +14,6 @@
 #include "AssetManager.h"
 #include "TextButton.h"
 #include "ChooseDialog.h"
+#include "MessageBar.h"
 
 #endif //STD_PRJ_KA_UI_H
