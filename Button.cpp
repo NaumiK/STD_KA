@@ -12,8 +12,8 @@ Button::Button(sf::Sprite sprite, sf::IntRect rect,
         : m_sprite(std::move(sprite)), m_ar(m_sprite), m_rect(rect),
           m_hover_s(std::move(hover_s)), m_unhover_s(std::move(unhover_s)), m_press_s(std::move(press_s)), m_release_s(std::move(release_s)),
           m_hover_f(std::move(hover_f)), m_unhover_f(std::move(unhover_f)), m_press_f(std::move(press_f)), m_release_f(std::move(release_f)) {
-    m_ar.addAnimation(hoverAnim);
     m_ar.addAnimation(pressAnim);
+    m_ar.addAnimation(hoverAnim);
     m_ar.addAnimation(releaseAnim);
 }
 

@@ -7,7 +7,6 @@
 struct TextButton : public Button {
     sf::Text m_text;
     std::string m_font;
-    Animation hover_anim;
     TextButton(sf::Sprite sprite, sf::IntRect rect, sf::Text text,
                const Animation &hoverAnim, const Animation &pressAnim, const Animation &releaseAnim,
                std::string hover_s="", std::string unhover_s="", std::string press_s="", std::string release_s="",
