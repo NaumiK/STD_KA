@@ -32,8 +32,8 @@ sf::String LCDRowDisplay::strRowWindow(const std::string &str, uint64_t frame, u
 
 void LCDRowDisplay::standard_user_settings_LCDDisplay(sf::Text &text) const {
     text.setFont(AssetManager::getFont(m_font));
-    text.setCharacterSize(25);
-    text.setLetterSpacing(2);
+    text.setCharacterSize(20);
+    text.setLetterSpacing(1);
 }
 
 void LCDRowDisplay::update(const sf::Time &dt) {
