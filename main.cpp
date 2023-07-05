@@ -25,7 +25,7 @@ struct ChooseDialog : public sf::Drawable, public PressHoverable {
     sf::Vector2f m_scale;
     sf::Sound m_speaker;
 
-    void m_func(std::function<void()> func) {
+    void m_func(const std::function<void()>& func) {
         m_speaker.setBuffer(AssetManager::getSoundBuffer("media/audio/buttonclick.ogg"));
         m_speaker.play();
         func();
@@ -47,7 +47,7 @@ struct ChooseDialog : public sf::Drawable, public PressHoverable {
             m_options.emplace_back(sf::Sprite(), sf::IntRect({x, y}, m_button_size),
                                    sf::Text(), Animation("hover"), Animation("press"), Animation("release"),
                                    "media/audio/mouse_hover.ogg", "media/audio/mouse_hover.ogg", "", "",
-                                   [](){}, [](){}, [&, option{options[i].func}](){m_func(option);}, [](){});
+                                   [](){}, [](){}, [&, option{options[i].func}]()mutable {m_func(std::ref(option));}, [](){});
             m_options.back().m_text.setString(sf::String::fromUtf8(options[i].desc.begin(), options[i].desc.end()));
             m_options.back().m_sprite.setPosition(x, y);
             m_options.back().m_text.setPosition(x, y);
@@ -144,8 +144,9 @@ int main() {
     lcdRowDisplay.m_bck_sprite.setPosition(10, 0);
     lcdRowDisplay.scale({2, 2});
     lcdRowDisplay.standard_user_settings_LCDDisplay(lcdRowDisplay.m_text);
-    ChooseDialog cmd({{"50р.", [](){std::cout << 50 << std::endl;}}}, "Вставьте купюру", {600, 0}, {100, 50}, {1, 1});
-//    ChooseMoneyDialog cmd({50, 100, 200, 500, 1000, 2000, 5000}, "Вставьте купюру", {600, 0}, {100, 50}, {1, 1});
+    ChooseDialog cmd({{"50р.", [](){std::cout << 50 << std::endl;}},
+                      {"lambda", [&lcdRowDisplay, k{uint64_t(1)}]()mutable {lcdRowDisplay.set_string(std::to_string(k) + "p.");k *= 2;}}},
+                     "Вставьте купюру", {600, 0}, {100, 50}, {1, 1});
     TextButton tb(sf::Sprite(), {0, 600, 100, 50}, sf::Text(), {"hover"}, b1_1, b1_2,
                   "media/audio/mouse_hover.ogg", "media/audio/mouse_hover.ogg", "media/audio/buttonclick.ogg", "media/audio/p2_2.wav");
     tb.standard_text(tb.m_text);

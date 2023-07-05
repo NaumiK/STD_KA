@@ -15,7 +15,7 @@ LCDRowDisplay::LCDRowDisplay(sf::Sprite bckSprite, const Animation &bckAnim, sf:
 }
 
 void LCDRowDisplay::set_string(const std::string &string){
-    m_string = std::string(m_length, ' ') + string + std::string(m_length, ' ');
+    m_string = (string.length() < m_length ? string : std::string(m_length, ' ') + string + std::string(m_length, ' '));
     m_current_time = sf::Time::Zero;
 }
 
