@@ -11,17 +11,21 @@ struct STD {
                                                                                     sf::Style::Titlebar |
                                                                                     sf::Style::Close);
     std::map<std::string, Status> m_status;
+    const std::string hello_message = "Insert money and choose your drink :)";
     AssetManager *m_am = AssetManager::getInstance();
     Status *m_cur_status = nullptr;
     bool status_switched = false;
     UserCursor m_cursor;
     Bank m_bank{};
     std::shared_ptr<MessageBar> m_mB = std::make_shared<MessageBar>(5, 36, sf::seconds(0.05), sf::Vector2i(0, 400));
+    std::shared_ptr<LCDRowDisplay> m_lcd = std::make_shared<LCDRowDisplay>(sf::Sprite(), Animation(), sf::Text(), hello_message, 16,
+                                                                           sf::seconds(0.03), "media/jm.otf");
 
     void add_money(uint64_t x) {
         m_bank.add_money(x);
         m_mB->leave_message("You have deposited " + std::to_string(x) + "p. to your account, your current account is " +
                             std::to_string(m_bank.get_curr_acc()) + "p.");
+        m_lcd->set_string(std::to_string(m_bank.get_curr_acc()) + "p.");
     }
 
     void get_change() {
@@ -29,6 +33,7 @@ struct STD {
         std::stringstream ss;
         ss << "You have received the change: 10p.(" << p10 << "), 5p.(" << p5 << "), 2p.(" << p2 << "), 1p.(" << p1 << ")";
         m_mB->leave_message(ss.str());
+        m_lcd->set_string(hello_message);
     }
 
     STD() {
@@ -59,17 +64,14 @@ struct STD {
                                                  b1_0, b1_1, b1_2,
                                                  "media/audio/p2_1.wav", "media/audio/p2_2.wav", "media/audio/p1_1.wav",
                                                  "media/audio/p1_2.wav");
-        auto lcd = std::make_shared<LCDRowDisplay>(sf::Sprite(), Animation(), sf::Text(), std::string(16, '8'), 16,
-                                                   sf::seconds(0.03), "media/jm.otf");
-        lcd->standard_user_settings_LCDDisplay(lcd->m_text);
-        lcd->scale({1, 2});
-        lcd->m_text.setLetterSpacing(1.5);
-        lcd->m_text.setPosition(1275, 15);
-        lcd->m_bck_sprite.setPosition(1275, 15);
+        m_lcd->standard_user_settings_LCDDisplay(m_lcd->m_text);
+        m_lcd->scale({1, 2});
+        m_lcd->m_text.setLetterSpacing(1.5);
+        m_lcd->m_text.setPosition(1275, 15);
+        m_lcd->m_bck_sprite.setPosition(1275, 15);
         auto change_button = std::make_shared<Button>(sf::Sprite(), sf::IntRect(1200, 100, 50, 100),
                                                       Animation("hover"), b2_1, b2_2,
                                                       "", "", "media/audio/p2_1.wav", "media/audio/p2_2.wav");
-        change_button->m_sprite.setPosition(1200, 100);
         change_button->m_press_f = [this]() { get_change(); };
         auto coin_tray = std::make_shared<sf::RectangleShape>(sf::Vector2f(50, 50));
         coin_tray->setPosition(1214, 220);
@@ -77,13 +79,11 @@ struct STD {
 //        coin_receiver->setPosition(1214, 15);
         auto coin_receiver = std::make_shared<Button>(sf::Sprite(), sf::IntRect(1214, 15, 100, 50), b1_0, b1_1, b1_2,
                                                       "", "", "", "");
-        coin_receiver->m_sprite.setPosition(1214, 15);
         coin_receiver->scale({0.5, 1.0});
         coin_receiver->m_press_f = [this]() { this->switchStatus("Ожидание оплаты (монеты)"); };
 //        auto money_receiver = std::make_shared<sf::RectangleShape>(sf::Vector2f(130, 75));
 //        money_receiver->setPosition(1370, 365);
         auto money_receiver = std::make_shared<Button>(sf::Sprite(), sf::IntRect(1370, 365, 100, 50), b1_0, b1_1, b1_2);
-        money_receiver->m_sprite.setPosition(1370, 365);
         money_receiver->scale({1.3, 1.5});
         money_receiver->m_press_f = [this]() { this->switchStatus("Ожидание оплаты (купюры)"); };
         auto coin_dialog = std::make_shared<ChooseDialog>(std::vector<FuncWithDesc>{
@@ -128,23 +128,23 @@ struct STD {
         m_status["Ожидание UI"] = {{nkB,  change_button, coin_receiver, money_receiver},
                                    {nkB,  change_button, coin_receiver, money_receiver},
                                    {nkB,  change_button, coin_receiver, money_receiver},
-                                   {m_mB, lcd,           nkB,   change_button, coin_receiver, money_receiver},
-                                   {rect, rect3,         rect2, rect1,         m_mB, lcd, nkB, change_button, coin_tray, coin_receiver, money_receiver, money_receiver}};
+                                   {m_mB, m_lcd,         nkB,           change_button, coin_receiver, money_receiver},
+                                   {rect, rect3,         rect2,         rect1,         m_mB,          m_lcd, nkB, change_button, coin_tray, coin_receiver, money_receiver, money_receiver}};
         m_status["Ожидание оплаты (монеты)"] = {{coin_dialog},
                                                 {coin_dialog},
                                                 {coin_dialog},
-                                                {m_mB, lcd,   coin_dialog, coin_receiver},
-                                                {rect, rect3, rect2,       rect1, m_mB, lcd, nkB, change_button, coin_tray, coin_receiver, money_receiver, coin_dialog}};
+                                                {m_mB, m_lcd, coin_dialog, coin_receiver},
+                                                {rect, rect3, rect2,       rect1, m_mB, m_lcd, nkB, change_button, coin_tray, coin_receiver, money_receiver, coin_dialog}};
         m_status["Ожидание оплаты (купюры)"] = {{money_dialog},
                                                 {money_dialog},
                                                 {money_dialog},
-                                                {m_mB, lcd,   money_dialog, money_receiver},
-                                                {rect, rect3, rect2, rect1, m_mB, lcd, nkB, change_button, coin_tray, coin_receiver, money_receiver, money_dialog}};
+                                                {m_mB, m_lcd, money_dialog, money_receiver},
+                                                {rect, rect3, rect2,        rect1, m_mB, m_lcd, nkB, change_button, coin_tray, coin_receiver, money_receiver, money_dialog}};
         m_status["Набор с клавиатуры"] = {{nkB},
                                           {nkB},
                                           {nkB},
-                                          {m_mB, lcd,   nkB,   change_button},
-                                          {rect, rect3, rect2, rect1, m_mB, lcd, nkB, change_button, coin_tray, coin_receiver, money_receiver}};
+                                          {m_mB, m_lcd, nkB,   change_button},
+                                          {rect, rect3, rect2, rect1, m_mB, m_lcd, nkB, change_button, coin_tray, coin_receiver, money_receiver}};
         m_status["Проверка ввода"] = {{},
                                       {},
                                       {},
