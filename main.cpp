@@ -2,6 +2,51 @@
 
 #include "KA_UI.h"
 
+#include <array>
+
+struct Bank {
+private:
+    std::array<uint64_t, 4> coins_available{0};
+    uint64_t curr_acc{0};
+public:
+    void add_coin(uint64_t value) {
+        switch (value) {
+            case 10: coins_available[0]++; break;
+            case 5:  coins_available[1]++; break;
+            case 2:  coins_available[2]++; break;
+            case 1:  coins_available[3]++; break;
+            default:                       break;
+        }
+    }
+
+    void add_money(uint64_t value) {
+        add_coin(value);
+        curr_acc += value;
+    }
+
+    uint64_t get_curr_acc() const {
+        return curr_acc;
+    }
+
+    std::array<uint64_t, 4> get_change() {
+        decltype(get_change()) res{0}, nom = {10, 5, 2, 1};
+        for (size_t i = 0; i < res.size(); ++i) {
+            res[i] = curr_acc / nom[i];
+            if (res[i] <= coins_available[i]) coins_available[i] -= res[i];
+            else res[i] = coins_available[i], coins_available[i] = 0;
+            curr_acc -= nom[i] * res[i];
+        }
+        return res;
+    }
+};
+
+struct Status {
+    std::list<Hoverable *> m_hover_objects;
+    std::list<PressHoverable *> m_press_objects;
+    std::list<PressHoverable *> m_release_objects;
+    std::list<Updateable *> m_update_objects;
+    std::list<sf::Drawable *> m_draw_objects;
+};
 
 int main() {
     auto am = AssetManager::getInstance();
@@ -60,6 +105,8 @@ int main() {
     cursor.add(&tb, true, true, false);
     cursor.add(&cmd, true, true, true);
     uint64_t k = 0;
+    std::list<Updateable *> upd = {&keyBoard, &cmd, &mb, &lcdRowDisplay, &tb};
+    std::list<sf::Drawable *> draw = {&keyBoard, &cmd, &mb, &lcdRowDisplay, &tb};
 
     while (window.isOpen()) {
         auto dt = clock.restart();
@@ -87,17 +134,11 @@ int main() {
 
         window.clear();
 
-        keyBoard.update(dt);
-        cmd.update(dt);
-        mb.update(dt);
-        lcdRowDisplay.update(dt);
-        tb.m_ar.update(dt);
+        for (auto &i: upd)
+            i->update(dt);
 
-        window.draw(keyBoard);
-        window.draw(cmd);
-        window.draw(mb);
-        window.draw(lcdRowDisplay);
-        window.draw(tb);
+        for (auto &i: draw)
+            window.draw(*i);
         cursor.draw(window);
 
         window.display();

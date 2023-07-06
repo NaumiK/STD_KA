@@ -3,8 +3,9 @@
 
 #include "SFML/Graphics.hpp"
 #include "AssetManager.h"
+#include "Hoverable.h"
 
-struct MessageBar : sf::Drawable {
+struct MessageBar : sf::Drawable, public Updateable {
 private:
     std::vector<std::pair<sf::Text, std::string>> m_lines;
     uint64_t m_message_cnt;
@@ -17,7 +18,7 @@ public:
     MessageBar(uint64_t messageCnt, uint64_t length, const sf::Time &dt, const sf::Vector2i &pos, int space = 30,
                std::string font = "media/basis33.ttf");
 
-    void update(sf::Time dt);
+    void update(const sf::Time &dt) override;
     void leave_message(const std::string &message);
 
 private:

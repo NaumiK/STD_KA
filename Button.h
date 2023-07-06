@@ -8,7 +8,7 @@
 #include <functional>
 #include "Hoverable.h"
 
-struct Button : public sf::Drawable, public PressHoverable {
+struct Button : public sf::Drawable, public PressHoverable, public Updateable {
     sf::Sprite m_sprite;
     sf::IntRect m_rect;
     Animator m_ar;
@@ -28,6 +28,7 @@ struct Button : public sf::Drawable, public PressHoverable {
     void scale(const sf::Vector2f &factor);
     bool contains(const sf::Vector2i &vr) const override;
     void hover(const sf::Vector2i &vr) override;
+    void update(const sf::Time &dt) override;
 private:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 };

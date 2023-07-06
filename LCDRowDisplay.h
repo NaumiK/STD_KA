@@ -3,8 +3,9 @@
 
 #include <SFML/Graphics.hpp>
 #include "Animator.h"
+#include "Hoverable.h"
 
-struct LCDRowDisplay : public sf::Drawable{
+struct LCDRowDisplay : public sf::Drawable, public Updateable {
     uint64_t m_length;
     sf::Sprite m_bck_sprite;
     Animator m_bck_ar;
@@ -20,7 +21,7 @@ struct LCDRowDisplay : public sf::Drawable{
     void scale(const sf::Vector2f &factors);
     static sf::String strRowWindow(const std::string &str, uint64_t frame, uint64_t l);
     void standard_user_settings_LCDDisplay(sf::Text &text) const;
-    void update(const sf::Time &dt);
+    void update(const sf::Time &dt) override;
 private:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 };

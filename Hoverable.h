@@ -13,4 +13,8 @@ struct PressHoverable : public Hoverable {
     virtual void release(const sf::Vector2i &vr) = 0;
 };
 
+struct Updateable {
+    virtual void update(const sf::Time &dt) = 0;
+};
+
 #endif //STD_PRJ_HOVERABLE_H

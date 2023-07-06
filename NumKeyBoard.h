@@ -7,7 +7,7 @@
 #include "Button.h"
 #include "Hoverable.h"
 
-struct NumKeyBoard : public sf::Drawable, public PressHoverable {
+struct NumKeyBoard : public sf::Drawable, public PressHoverable, Updateable {
     sf::Sound m_speaker;
     std::list<Button> m_buttons;
     virtual void keySignal(uint64_t key) {}
@@ -21,7 +21,7 @@ struct NumKeyBoard : public sf::Drawable, public PressHoverable {
                 const std::string &filename_prefix = "media/audio/c");
     void press(const sf::Vector2i &pos) override;
     void release(const sf::Vector2i &pos) override;
-    void update(const sf::Time &dt);
+    void update(const sf::Time &dt) override;
     bool contains(const sf::Vector2i &vr) const override;
     void hover(const sf::Vector2i &vr) override;
 private:

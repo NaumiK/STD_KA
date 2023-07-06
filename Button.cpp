@@ -81,3 +81,7 @@ void Button::hover(const sf::Vector2i &vr) {
         return;
     }
 }
+
+void Button::update(const sf::Time &dt) {
+    m_ar.update(dt);
+}

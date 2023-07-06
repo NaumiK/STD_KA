@@ -5,6 +5,7 @@
 #include <string>
 #include <list>
 #include <SFML/Graphics.hpp>
+#include "Hoverable.h"
 
 struct Animation {
     std::string name, texture_path;
@@ -16,7 +17,7 @@ struct Animation {
     sf::IntRect get_box(uint64_t cur_frame) const;
 };
 
-struct Animator {
+struct Animator : public Updateable {
     sf::Sprite &m_sprite;
     sf::Time current_time;
     std::list<Animation> m_animations;
@@ -30,7 +31,7 @@ struct Animator {
     Animation &addAnimation(Animation &&anim);
     Animation &addAnimation(const Animation &anim);
     void restart();
-    void update(const sf::Time &dt);
+    void update(const sf::Time &dt) override;
 };
 
 

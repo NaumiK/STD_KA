@@ -4,7 +4,7 @@
 #include "TextButton.h"
 #include "FuncWithDesc.h"
 
-struct ChooseDialog : public sf::Drawable, public PressHoverable {
+struct ChooseDialog : public sf::Drawable, public PressHoverable, Updateable {
     TextButton m_headline;
     std::list<TextButton> m_options;
     sf::Vector2i m_button_size, m_pos;
@@ -14,7 +14,7 @@ struct ChooseDialog : public sf::Drawable, public PressHoverable {
     void m_func(const std::function<void()>& func);
 
     ChooseDialog(const std::vector<FuncWithDesc>& options, const std::string &headline, sf::Vector2f pos, sf::Vector2i button_size, sf::Vector2i scale);
-    void update(sf::Time dt);
+    void update(const sf::Time &dt) override;
     bool contains(const sf::Vector2i &vr) const override;
 
     void hover(const sf::Vector2i &vr) override;

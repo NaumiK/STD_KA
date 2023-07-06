@@ -32,7 +32,7 @@ ChooseDialog::ChooseDialog(const std::vector<FuncWithDesc> &options, const std::
     }
 }
 
-void ChooseDialog::update(sf::Time dt) {
+void ChooseDialog::update(const sf::Time &dt) {
     m_headline.m_ar.update(dt);
     for (auto &i: m_options) i.m_ar.update(dt);
 }

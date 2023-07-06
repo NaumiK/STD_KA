@@ -12,7 +12,7 @@ MessageBar::MessageBar(uint64_t messageCnt, uint64_t length, const sf::Time &dt,
     }
 }
 
-void MessageBar::update(sf::Time dt) {
+void MessageBar::update(const sf::Time &dt) {
     m_current_time += dt;
     for (size_t i = 0; i < m_message_cnt; ++i) {
         auto &[m_text, m_string] = m_lines[i];
