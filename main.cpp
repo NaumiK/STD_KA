@@ -1,4 +1,5 @@
 #include <utility>
+#include <sstream>
 
 #include "KA_UI.h"
 #include "Bank.h"
@@ -15,6 +16,20 @@ struct STD {
     bool status_switched = false;
     UserCursor m_cursor;
     Bank m_bank{};
+    std::shared_ptr<MessageBar> m_mB = std::make_shared<MessageBar>(5, 36, sf::seconds(0.05), sf::Vector2i(0, 400));
+
+    void add_money(uint64_t x) {
+        m_bank.add_money(x);
+        m_mB->leave_message("You have deposited " + std::to_string(x) + "p. to your account, your current account is " +
+                            std::to_string(m_bank.get_curr_acc()) + "p.");
+    }
+
+    void get_change() {
+        auto [p10, p5, p2, p1] = m_bank.get_change();
+        std::stringstream ss;
+        ss << "You have received the change: 10p.(" << p10 << "), 5p.(" << p5 << "), 2p.(" << p2 << "), 1p.(" << p1 << ")";
+        m_mB->leave_message(ss.str());
+    }
 
     STD() {
         Animation b1_1 = {"press", "media/images/b1_1.png",
@@ -38,7 +53,6 @@ struct STD {
                           sf::Vector2i(64, 81), sf::seconds(0.4),
                           sf::Color(0, 255, 0), false};
         m_window->setMouseCursorVisible(false);
-        auto mB = std::make_shared<MessageBar>(5, 36, sf::seconds(0.05), sf::Vector2i(0, 400));
         auto nkB = std::make_shared<NumKeyBoard>(10, 3,
                                                  sf::Vector2i(1275, 80), sf::Vector2i(5, 20), sf::Vector2i(100, 50),
                                                  sf::Vector2f(1, 1),
@@ -56,28 +70,39 @@ struct STD {
                                                       Animation("hover"), b2_1, b2_2,
                                                       "", "", "media/audio/p2_1.wav", "media/audio/p2_2.wav");
         change_button->m_sprite.setPosition(1200, 100);
-        change_button->m_press_f = [this](){this->switchStatus("Ожидание оплаты (купюры)");};
+        change_button->m_press_f = [this]() { get_change(); };
         auto coin_tray = std::make_shared<sf::RectangleShape>(sf::Vector2f(50, 50));
         coin_tray->setPosition(1214, 220);
-        auto coin_receiver = std::make_shared<sf::RectangleShape>(sf::Vector2f(50, 50));
-        coin_receiver->setPosition(1214, 15);
-        auto money_receiver = std::make_shared<sf::RectangleShape>(sf::Vector2f(130, 75));
-        money_receiver->setPosition(1370, 365);
-        auto coin_dialog = std::make_shared<ChooseDialog>(std::vector<FuncWithDesc>{{"1p.",   []() {}},
-                                                                                    {"2p.",   []() {}},
-                                                                                    {"5p.",   []() {}},
-                                                                                    {"10p.",  []() {}},
-                                                                                    {"Close", []() {}}},
+//        auto coin_receiver = std::make_shared<sf::RectangleShape>(sf::Vector2f(50, 50));
+//        coin_receiver->setPosition(1214, 15);
+        auto coin_receiver = std::make_shared<Button>(sf::Sprite(), sf::IntRect(1214, 15, 100, 50), b1_0, b1_1, b1_2,
+                                                      "", "", "", "");
+        coin_receiver->m_sprite.setPosition(1214, 15);
+        coin_receiver->scale({0.5, 1.0});
+        coin_receiver->m_press_f = [this]() { this->switchStatus("Ожидание оплаты (монеты)"); };
+//        auto money_receiver = std::make_shared<sf::RectangleShape>(sf::Vector2f(130, 75));
+//        money_receiver->setPosition(1370, 365);
+        auto money_receiver = std::make_shared<Button>(sf::Sprite(), sf::IntRect(1370, 365, 100, 50), b1_0, b1_1, b1_2);
+        money_receiver->m_sprite.setPosition(1370, 365);
+        money_receiver->scale({1.3, 1.5});
+        money_receiver->m_press_f = [this]() { this->switchStatus("Ожидание оплаты (купюры)"); };
+        auto coin_dialog = std::make_shared<ChooseDialog>(std::vector<FuncWithDesc>{
+                                                                  {"1p.",   [this]() { add_money(1); }},
+                                                                  {"2p.",   [this]() { add_money(2); }},
+                                                                  {"5p.",   [this]() { add_money(5); }},
+                                                                  {"10p.",  [this]() { add_money(10); }},
+                                                                  {"Close", [this]() { switchStatus("Ожидание UI"); }}},
                                                           "Insert coin", sf::Vector2f(0, 0), sf::Vector2i(400, 40),
                                                           sf::Vector2f(1, 1));
-        auto money_dialog = std::make_shared<ChooseDialog>(std::vector<FuncWithDesc>{{"50p.",   []() {}},
-                                                                                     {"100p.",  []() {}},
-                                                                                     {"200p.",  []() {}},
-                                                                                     {"500p.",  []() {}},
-                                                                                     {"1000p.", []() {}},
-                                                                                     {"2000p.", []() {}},
-                                                                                     {"5000p.", []() {}},
-                                                                                     {"Close",  [this]() { switchStatus("Ожидание UI");}}},
+        auto money_dialog = std::make_shared<ChooseDialog>(std::vector<FuncWithDesc>{
+                                                                   {"50p.",   [this]() { add_money(50); }},
+                                                                   {"100p.",  [this]() { add_money(100); }},
+                                                                   {"200p.",  [this]() { add_money(200); }},
+                                                                   {"500p.",  [this]() { add_money(500); }},
+                                                                   {"1000p.", [this]() { add_money(1000); }},
+                                                                   {"2000p.", [this]() { add_money(2000); }},
+                                                                   {"5000p.", [this]() { add_money(5000); }},
+                                                                   {"Close",  [this]() { switchStatus("Ожидание UI"); }}},
                                                            "Insert money", sf::Vector2f(0, 0), sf::Vector2i(400, 40),
                                                            sf::Vector2f(1, 1));
 
@@ -99,43 +124,37 @@ struct STD {
         rect3->setOutlineColor(sf::Color(255, 255, 255));
         rect3->setOutlineThickness(2);
 ////////////////////////////////////////////////////
-        mB->leave_message(std::string(40, '8'));
-        mB->leave_message(std::string(40, '8'));
-        mB->leave_message(std::string(40, '8'));
-        mB->leave_message(std::string(40, '8'));
-        mB->leave_message(std::string(40, '8'));
-        mB->leave_message(std::string(40, '0'));
 
-        m_status["Ожидание UI"] = {{nkB,  change_button},
-                                   {nkB,  change_button},
-                                   {nkB,  change_button},
-                                   {mB,   lcd,   nkB,   change_button},
-                                   {rect, rect3, rect2, rect1, mB, lcd, nkB, change_button, coin_tray, coin_receiver, money_receiver}};
+        m_status["Ожидание UI"] = {{nkB,  change_button, coin_receiver, money_receiver},
+                                   {nkB,  change_button, coin_receiver, money_receiver},
+                                   {nkB,  change_button, coin_receiver, money_receiver},
+                                   {m_mB, lcd,           nkB,   change_button, coin_receiver, money_receiver},
+                                   {rect, rect3,         rect2, rect1,         m_mB, lcd, nkB, change_button, coin_tray, coin_receiver, money_receiver, money_receiver}};
         m_status["Ожидание оплаты (монеты)"] = {{coin_dialog},
                                                 {coin_dialog},
                                                 {coin_dialog},
-                                                {mB,   lcd,   nkB,   change_button, coin_dialog},
-                                                {rect, rect3, rect2, rect1,         mB, lcd, nkB, change_button, coin_tray, coin_receiver, money_receiver, coin_dialog}};
+                                                {m_mB, lcd,   coin_dialog, coin_receiver},
+                                                {rect, rect3, rect2,       rect1, m_mB, lcd, nkB, change_button, coin_tray, coin_receiver, money_receiver, coin_dialog}};
         m_status["Ожидание оплаты (купюры)"] = {{money_dialog},
                                                 {money_dialog},
                                                 {money_dialog},
-                                                {mB,   lcd,   nkB,   change_button, money_dialog},
-                                                {rect, rect3, rect2, rect1,         mB, lcd, nkB, change_button, coin_tray, coin_receiver, money_receiver, money_dialog}};
+                                                {m_mB, lcd,   money_dialog, money_receiver},
+                                                {rect, rect3, rect2, rect1, m_mB, lcd, nkB, change_button, coin_tray, coin_receiver, money_receiver, money_dialog}};
         m_status["Набор с клавиатуры"] = {{nkB},
                                           {nkB},
                                           {nkB},
-                                          {mB,   lcd,   nkB,   change_button},
-                                          {rect, rect3, rect2, rect1, mB, lcd, nkB, change_button, coin_tray, coin_receiver, money_receiver}};
+                                          {m_mB, lcd,   nkB,   change_button},
+                                          {rect, rect3, rect2, rect1, m_mB, lcd, nkB, change_button, coin_tray, coin_receiver, money_receiver}};
         m_status["Проверка ввода"] = {{},
                                       {},
                                       {},
-                                      {mB},
-                                      {mB}};
+                                      {m_mB},
+                                      {m_mB}};
         m_status["Забрать товар"] = {{},
                                      {},
                                      {},
-                                     {mB},
-                                     {mB}};
+                                     {m_mB},
+                                     {m_mB}};
         switchStatus("Ожидание UI");
     }
 
