@@ -31,7 +31,7 @@ void UserCursor::release(sf::RenderWindow &win) {
         i->release(pos);
 }
 
-void UserCursor::add(PressHoverable *ph, bool h, bool p, bool r) {
+void UserCursor::add(std::shared_ptr<PressHoverable> ph, bool h, bool p, bool r) {
     if (h) m_hover_objects.push_back(ph);
     if (p) m_press_objects.push_back(ph);
     if (r) m_release_objects.push_back(ph);

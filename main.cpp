@@ -1,148 +1,195 @@
 #include <utility>
 
 #include "KA_UI.h"
+#include "Bank.h"
+#include "Status.h"
 
-#include <array>
+struct STD {
+    std::unique_ptr<sf::RenderWindow> m_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(1600, 550),
+                                                                                    "Test Manager",
+                                                                                    sf::Style::Titlebar |
+                                                                                    sf::Style::Close);
+    std::map<std::string, Status> m_status;
+    AssetManager *m_am = AssetManager::getInstance();
+    Status *m_cur_status = nullptr;
+    UserCursor m_cursor;
+    Bank m_bank{};
 
-struct Bank {
-private:
-    std::array<uint64_t, 4> coins_available{0};
-    uint64_t curr_acc{0};
-public:
-    void add_coin(uint64_t value) {
-        switch (value) {
-            case 10: coins_available[0]++; break;
-            case 5:  coins_available[1]++; break;
-            case 2:  coins_available[2]++; break;
-            case 1:  coins_available[3]++; break;
-            default:                       break;
-        }
+    STD() {
+        Animation b1_1 = {"press", "media/images/b1_1.png",
+                          17, 5,
+                          {100, 50}, sf::seconds(0.8),
+                          {0, 255, 0}, false};
+        Animation b1_2 = {"release", "media/images/b1_2.png",
+                          9, 3,
+                          {100, 50}, sf::seconds(0.4),
+                          {0, 255, 0}, false};
+        Animation b1_0 = {"hover", "media/images/b1_0.png",
+                          9, 3,
+                          {100, 50}, sf::seconds(0.4),
+                          {0, 255, 0}, true};
+        Animation b2_1 = {"press", "media/images/b2_1.png",
+                          17, 5,
+                          {64, 81}, sf::seconds(0.8),
+                          {0, 255, 0}, false};
+        Animation b2_2 = {"release", "media/images/b2_2.png",
+                          9, 3,
+                          sf::Vector2i(64, 81), sf::seconds(0.4),
+                          sf::Color(0, 255, 0), false};
+        m_window->setMouseCursorVisible(false);
+        auto mB = std::make_shared<MessageBar>(5, 36, sf::seconds(0.05), sf::Vector2i(0, 400));
+        auto nkB = std::make_shared<NumKeyBoard>(10, 3,
+                                                 sf::Vector2i(1275, 80), sf::Vector2i(5, 20), sf::Vector2i(100, 50),
+                                                 sf::Vector2f(1, 1),
+                                                 b1_0, b1_1, b1_2,
+                                                 "media/audio/p2_1.wav", "media/audio/p2_2.wav", "media/audio/p1_1.wav",
+                                                 "media/audio/p1_2.wav");
+        auto lcd = std::make_shared<LCDRowDisplay>(sf::Sprite(), Animation(), sf::Text(), std::string(16, '8'), 16,
+                                                   sf::seconds(0.03), "media/jm.otf");
+        lcd->standard_user_settings_LCDDisplay(lcd->m_text);
+        lcd->scale({1, 2});
+        lcd->m_text.setLetterSpacing(1.5);
+        lcd->m_text.setPosition(1275, 15);
+        lcd->m_bck_sprite.setPosition(1275, 15);
+        auto change_button = std::make_shared<Button>(sf::Sprite(), sf::IntRect(1200, 100, 50, 100),
+                                                      Animation("hover"), b2_1, b2_2,
+                                                      "", "", "media/audio/p2_1.wav", "media/audio/p2_2.wav");
+        change_button->m_sprite.setPosition(1200, 100);
+        auto coin_tray = std::make_shared<sf::RectangleShape>(sf::Vector2f(50, 50));
+        coin_tray->setPosition(1214, 220);
+        auto coin_receiver = std::make_shared<sf::RectangleShape>(sf::Vector2f(50, 50));
+        coin_receiver->setPosition(1214, 15);
+        auto money_receiver = std::make_shared<sf::RectangleShape>(sf::Vector2f(130, 75));
+        money_receiver->setPosition(1370, 365);
+        auto coin_dialog = std::make_shared<ChooseDialog>(std::vector<FuncWithDesc>{{"1p.",   []() {}},
+                                                                                    {"2p.",   []() {}},
+                                                                                    {"5p.",   []() {}},
+                                                                                    {"10p.",  []() {}},
+                                                                                    {"Close", []() {}}},
+                                                          "Insert coin", sf::Vector2f(0, 0), sf::Vector2i(400, 40),
+                                                          sf::Vector2f(1, 1));
+        auto money_dialog = std::make_shared<ChooseDialog>(std::vector<FuncWithDesc>{{"50p.",   []() {}},
+                                                                                    {"100p.",   []() {}},
+                                                                                    {"200p.",   []() {}},
+                                                                                    {"500p.",  []() {}},
+                                                                                    {"1000p.",  []() {}},
+                                                                                    {"2000p.",  []() {}},
+                                                                                    {"5000p.",  []() {}},
+                                                                                    {"Close", []() {}}},
+                                                          "Insert money", sf::Vector2f(0, 0), sf::Vector2i(400, 40),
+                                                          sf::Vector2f(1, 1));
+
+////////////////////////////////////////////////////
+        auto rect = std::make_shared<sf::RectangleShape>(sf::Vector2f(1200, 550));
+        rect->setFillColor(sf::Color(0, 0, 0, 0));
+        rect->setOutlineColor(sf::Color(255, 255, 255));
+        rect->setOutlineThickness(2);
+        auto rect1 = std::make_shared<sf::RectangleShape>(sf::Vector2f(400, 550));
+        rect1->setFillColor(sf::Color(0, 0, 0, 0));
+        rect1->setOutlineColor(sf::Color(255, 255, 255));
+        rect1->setOutlineThickness(2);
+        auto rect2 = std::make_shared<sf::RectangleShape>(sf::Vector2f(800, 550));
+        rect2->setFillColor(sf::Color(0, 0, 0, 0));
+        rect2->setOutlineColor(sf::Color(255, 255, 255));
+        rect2->setOutlineThickness(2);
+        auto rect3 = std::make_shared<sf::RectangleShape>(sf::Vector2f(400, 400));
+        rect3->setFillColor(sf::Color(0, 0, 0, 0));
+        rect3->setOutlineColor(sf::Color(255, 255, 255));
+        rect3->setOutlineThickness(2);
+////////////////////////////////////////////////////
+        mB->leave_message(std::string(40, '8'));
+        mB->leave_message(std::string(40, '8'));
+        mB->leave_message(std::string(40, '8'));
+        mB->leave_message(std::string(40, '8'));
+        mB->leave_message(std::string(40, '8'));
+        mB->leave_message(std::string(40, '0'));
+
+        m_status["Ожидание UI"] = {{nkB,  change_button, money_dialog},
+                                   {nkB,  change_button, money_dialog},
+                                   {nkB,  change_button, money_dialog},
+                                   {mB,   lcd,           nkB,   change_button, money_dialog},
+                                   {rect, rect3,         rect2, rect1,         mB, lcd, nkB, change_button, coin_tray, coin_receiver, money_receiver, money_dialog}};
+        m_status["Ожидание оплаты"] = {{},
+                                       {},
+                                       {},
+                                       {mB},
+                                       {mB}};
+        m_status["Набор с клавиатуры"] = {{},
+                                          {},
+                                          {},
+                                          {mB},
+                                          {mB}};
+        m_status["Проверка ввода"] = {{},
+                                      {},
+                                      {},
+                                      {mB},
+                                      {mB}};
+        m_status["Забрать товар"] = {{},
+                                     {},
+                                     {},
+                                     {mB},
+                                     {mB}};
+        switchStatus("Ожидание UI");
     }
 
-    void add_money(uint64_t value) {
-        add_coin(value);
-        curr_acc += value;
+    ~STD() {
+        m_cur_status = nullptr;
+        delete m_am;
     }
 
-    uint64_t get_curr_acc() const {
-        return curr_acc;
-    }
-
-    std::array<uint64_t, 4> get_change() {
-        decltype(get_change()) res{0}, nom = {10, 5, 2, 1};
-        for (size_t i = 0; i < res.size(); ++i) {
-            res[i] = curr_acc / nom[i];
-            if (res[i] <= coins_available[i]) coins_available[i] -= res[i];
-            else res[i] = coins_available[i], coins_available[i] = 0;
-            curr_acc -= nom[i] * res[i];
-        }
-        return res;
-    }
-};
-
-struct Status {
-    std::list<Hoverable *> m_hover_objects;
-    std::list<PressHoverable *> m_press_objects;
-    std::list<PressHoverable *> m_release_objects;
-    std::list<Updateable *> m_update_objects;
-    std::list<sf::Drawable *> m_draw_objects;
-};
-
-int main() {
-    auto am = AssetManager::getInstance();
-    Animation b1_1 = {"press", "media/images/b1_1.png",
-                      17, 5,
-                      {100, 50}, sf::seconds(0.8),
-                      {0, 255, 0}, false};
-    Animation b1_2 = {"release", "media/images/b1_2.png",
-                      9, 3,
-                      {100, 50}, sf::seconds(0.4),
-                      {0, 255, 0}, false};
-    Animation b1_0 = {"hover", "media/images/b1_0.png",
-                      9, 3,
-                      {100, 50}, sf::seconds(0.4),
-                      {0, 255, 0}, true};
-    Animation b2_1 = {"press", "media/images/b2_1.png",
-                      17, 5,
-                      {64, 81}, sf::seconds(0.8),
-                      {0, 255, 0}, false};
-    Animation b2_2 = {"release", "media/images/b2_2.png",
-                      9, 3,
-                      sf::Vector2i(64, 81), sf::seconds(0.4),
-                      sf::Color(0, 255, 0), false};
-    sf::RenderWindow window(sf::VideoMode(800, 800), "Test Manager",
-                            sf::Style::Titlebar | sf::Style::Close);
-    window.setMouseCursorVisible(false);
-
-    NumKeyBoard keyBoard(10, 3, {0, 100}, {5, 20}, {100, 50}, {2, 2},
-                         b1_0, b1_1, b1_2, "media/audio/p2_1.wav", "media/audio/p2_2.wav", "media/audio/p1_1.wav",
-                         "media/audio/p1_2.wav");
-    LCDRowDisplay lcdRowDisplay(sf::Sprite(), {}, sf::Text(), "Insert money and choose your drink :)", 16, sf::seconds(0.03), "media/jm.otf");
-    lcdRowDisplay.m_text.setPosition(20, 10);
-    lcdRowDisplay.m_bck_sprite.setPosition(10, 0);
-    lcdRowDisplay.scale({2, 2});
-    lcdRowDisplay.standard_user_settings_LCDDisplay(lcdRowDisplay.m_text);
-    ChooseDialog cmd({{"50р.", []() { std::cout << 50 << std::endl; }},
-                      {"lambda", [&lcdRowDisplay, k{uint64_t(1)}]()mutable {
-                          lcdRowDisplay.set_string(std::to_string(k) + "p.");
-                          k *= 2;
-                      }}},
-                     "Вставьте купюру", {600, 0}, {100, 50}, {1, 1});
-    TextButton tb(sf::Sprite(), {0, 600, 100, 50}, sf::Text(), {"hover"}, b1_1, b1_2,
-                  "media/audio/mouse_hover.ogg", "media/audio/mouse_hover.ogg", "media/audio/buttonclick.ogg",
-                  "media/audio/p2_2.wav");
-    tb.standard_text(tb.m_text);
-    tb.setPosition(0, 600);
-    tb.m_text.setPosition(40, 610);
-    tb.m_text.setString(L":)");
-    MessageBar mb(5, 16, sf::seconds(0.03), {100, 600});
-    mb.leave_message(std::string(32, 'a'));
-    mb.leave_message(std::string(15, 'b'));
-
-    sf::Clock clock;
-    UserCursor cursor;
-    cursor.add(&keyBoard);
-    cursor.add(&tb, true, true, false);
-    cursor.add(&cmd, true, true, true);
-    uint64_t k = 0;
-    std::list<Updateable *> upd = {&keyBoard, &cmd, &mb, &lcdRowDisplay, &tb};
-    std::list<sf::Drawable *> draw = {&keyBoard, &cmd, &mb, &lcdRowDisplay, &tb};
-
-    while (window.isOpen()) {
-        auto dt = clock.restart();
-        sf::Event event{};
-        while (window.pollEvent(event)) {
-            switch (event.type) {
+    void input() {
+        sf::Event m_event{};
+        while (m_window->pollEvent(m_event)) {
+            switch (m_event.type) {
                 case sf::Event::Closed:
-                    window.close();
+                    m_window->close();
                     break;
                 case sf::Event::MouseButtonPressed:
-                    cursor.press(window);
+                    m_cursor.press(*m_window);
                     break;
                 case sf::Event::MouseButtonReleased:
-                    cursor.release(window);
-                    break;
-                case sf::Event::KeyPressed:
-                    tb.release(tb.m_rect.getPosition());
-                    mb.leave_message(std::to_string(k++));
+                    m_cursor.release(*m_window);
                     break;
                 default:
                     break;
             }
         }
-        cursor.hover(window);
-
-        window.clear();
-
-        for (auto &i: upd)
-            i->update(dt);
-
-        for (auto &i: draw)
-            window.draw(*i);
-        cursor.draw(window);
-
-        window.display();
     }
-    delete am;
+
+    void switchStatus(const std::string &status_name) {
+        m_cur_status = &m_status.at(status_name);
+        m_cursor.m_hover_objects = m_cur_status->m_hover_objects;
+        m_cursor.m_press_objects = m_cur_status->m_press_objects;
+        m_cursor.m_release_objects = m_cur_status->m_release_objects;
+    }
+
+    void update(const sf::Time &dt) {
+        m_cursor.hover(*m_window);
+        for (auto &i: m_cur_status->m_update_objects)
+            i->update(dt);
+    }
+
+    void draw() {
+        m_window->clear();
+        for (auto &i: m_cur_status->m_draw_objects)
+            m_window->draw(*i);
+        m_cursor.draw(*m_window);
+        m_window->display();
+    }
+
+    void run() {
+        sf::Clock m_clock;
+        while (m_window->isOpen()) {
+            auto dt = m_clock.restart();
+            input();
+            update(dt);
+            draw();
+        }
+    }
+};
+
+int main() {
+    STD std;
+    std.run();
     return 0;
 }

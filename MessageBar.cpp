@@ -27,7 +27,7 @@ void MessageBar::leave_message(const std::string &message) {
     for (uint64_t i = 0; i < m_message_cnt - 1; ++i) {
         m_lines[i].second = m_lines[i + 1].second;
     }
-    m_lines[m_message_cnt - 1].second = (message.length() < m_length ? message : std::string(m_length, ' ') +
+    m_lines[m_message_cnt - 1].second = (message.length() <= m_length ? message : std::string(m_length, ' ') +
                                                                                  message +
                                                                                  std::string(m_length, ' '));
 }

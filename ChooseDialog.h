@@ -13,7 +13,7 @@ struct ChooseDialog : public sf::Drawable, public PressHoverable, Updateable {
 
     void m_func(const std::function<void()>& func);
 
-    ChooseDialog(const std::vector<FuncWithDesc>& options, const std::string &headline, sf::Vector2f pos, sf::Vector2i button_size, sf::Vector2i scale);
+    ChooseDialog(const std::vector<FuncWithDesc>& options, const std::string &headline, sf::Vector2f pos, sf::Vector2i button_size, sf::Vector2f scale);
     void update(const sf::Time &dt) override;
     bool contains(const sf::Vector2i &vr) const override;
 

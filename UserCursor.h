@@ -12,9 +12,9 @@ struct UserCursor {
             {"media/images/cursor/Point.png", {-18, -12}},
             {"media/images/cursor/ClosedArm.png", {-25, -25}}
     };
-    std::list<Hoverable *> m_hover_objects;
-    std::list<PressHoverable *> m_press_objects;
-    std::list<PressHoverable *> m_release_objects;
+    std::list<std::shared_ptr<Hoverable>> m_hover_objects;
+    std::list<std::shared_ptr<PressHoverable>> m_press_objects;
+    std::list<std::shared_ptr<PressHoverable>> m_release_objects;
 
     UserCursor() = default;
 
@@ -22,7 +22,7 @@ struct UserCursor {
     void press(sf::RenderWindow &win);
     void release(sf::RenderWindow &win);
 
-    void add(PressHoverable *ph, bool hover = true, bool press = true, bool release = true);
+    void add(std::shared_ptr<PressHoverable> ph, bool hover = true, bool press = true, bool release = true);
 
     void draw(sf::RenderWindow &win);
 };

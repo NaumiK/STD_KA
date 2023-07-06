@@ -6,8 +6,10 @@ add_executable(STD_PRJ main.cpp Animator.cpp
         NumKeyBoard.cpp FuncWithDesc.h ChooseDialog.cpp
         AssetManager.cpp UserCursor.cpp
         LCDRowDisplay.cpp MessageBar.cpp
-        KA_UI.h)
+        Bank.cpp Status.h)
+
 #add_executable(STD_PRJ test.cpp)
+#add_executable(STD_PRJ animationView.cpp Animator.cpp AssetManager.cpp)
 
 find_package(SFML COMPONENTS system window graphics CONFIG REQUIRED)
 target_link_libraries(STD_PRJ sfml-system sfml-network sfml-graphics sfml-window sfml-audio)

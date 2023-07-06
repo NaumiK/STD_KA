@@ -7,7 +7,7 @@ void ChooseDialog::m_func(const std::function<void()> &func) {
 }
 
 ChooseDialog::ChooseDialog(const std::vector<FuncWithDesc> &options, const std::string &headline, sf::Vector2f pos,
-                           sf::Vector2i button_size, sf::Vector2i scale)
+                           sf::Vector2i button_size, sf::Vector2f scale)
         : m_button_size(button_size), m_scale(scale), m_pos(pos),
           m_headline(sf::Sprite(), {m_pos, m_button_size}, sf::Text(), {}, {}, {}) {
     m_headline.m_text.setPosition(m_pos.x, m_pos.y);
