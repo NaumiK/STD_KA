@@ -41,10 +41,11 @@ struct STD {
     }
 
     CoffeeChecker m_ic;
+    uint64_t m_id = 0;
 
     struct IdInput : public NumKeyBoard {
         STD *m_std = nullptr;
-        uint64_t m_id = 0, m_max_digit = 1000, m_digit = m_max_digit;
+        uint64_t m_max_digit = 1000, m_digit = m_max_digit;
 
         static std::string printId(uint64_t id, uint64_t digit) {
             std::stringstream ss;
@@ -56,13 +57,13 @@ struct STD {
             if (m_std != nullptr && m_digit == m_max_digit)
                 m_std->switchStatus("Набор с клавиатуры");
             if (m_digit > 0) {
-                m_id += m_digit * key;
+                m_std->m_id += m_digit * key;
                 m_digit /= 10;
             }
             if (m_digit == 0) {
-                if (m_std->m_ic.m_content.contains(m_id))
-                    m_std->m_mB->leave_message("You have chosen " + m_std->m_ic.name_volume(m_id));
-                if (m_std->m_ic.checkPrice(m_id, m_std->m_bank.get_curr_acc())) {
+                if (m_std->m_ic.m_content.contains(m_std->m_id))
+                    m_std->m_mB->leave_message("You have chosen " + m_std->m_ic.name_volume(m_std->m_id));
+                if (m_std->m_ic.checkPrice(m_std->m_id, m_std->m_bank.get_curr_acc())) {
                     m_std->m_drink_is_cooking->restart();
                     m_std->switchStatus("Приготовление напитка");
                     return;
@@ -73,11 +74,11 @@ struct STD {
                     return;
                 }
             }
-            m_std->m_lcd->set_string(printId(m_id, m_max_digit));
+            m_std->m_lcd->set_string(printId(m_std->m_id, m_max_digit));
         }
 
         void reset() {
-            m_id = 0;
+            m_std->m_id = 0;
             m_digit = m_max_digit;
         }
 
@@ -91,17 +92,21 @@ struct STD {
                 : NumKeyBoard(k, cols, pos0, distance, size, scale, hoverAnim, pressAnim, releaseAnim,
                               hover_s, unhover_s, press_s, release_s, filename_prefix) {}
     };
+
     std::shared_ptr<SoundAnimationChain<2>> m_drink_is_cooking = std::make_shared<SoundAnimationChain<2>>(sf::Sprite(),
                                                                                                           std::array<stsst, 2>{
-                                                                               stsst{"media/audio/click_to_start.ogg",
-                                                                                     "hover",
-                                                                                     sf::seconds(2)},
-                                                                               stsst{"media/audio/addingredient.wav",
-                                                                                     "press",
-                                                                                     sf::seconds(3)}},
+                                                                                                                  stsst{"media/audio/click_to_start.ogg",
+                                                                                                                        "hover",
+                                                                                                                        sf::seconds(
+                                                                                                                                2)},
+                                                                                                                  stsst{"media/audio/addingredient.wav",
+                                                                                                                        "press",
+                                                                                                                        sf::seconds(
+                                                                                                                                3)}},
                                                                                                           [this]() {
-                                                                           switchStatus("Забрать товар");
-                                                                       });
+                                                                                                              switchStatus(
+                                                                                                                      "Забрать товар");
+                                                                                                          });
 
     STD() {
         Animation b1_1 = {"press", "media/images/b1_1.png",
@@ -176,11 +181,18 @@ struct STD {
                                                            "Insert money", sf::Vector2f(0, 0), sf::Vector2i(400, 40),
                                                            sf::Vector2f(1, 1));
 //        auto m_drink_is_cooking = std::make_shared<Button>(sf::Sprite(), sf::IntRect(), b1_0, b1_1, b1_2, "");
-
         m_drink_is_cooking->m_sprite.setPosition(800, 0);
         m_drink_is_cooking->m_ar.addAnimation(b1_0);
         m_drink_is_cooking->m_ar.addAnimation(b1_1);
-        auto drink_is_cooked = std::make_shared<Button>(sf::Sprite(), sf::IntRect(), b1_0, b1_1, b1_2, "");
+        auto drink_is_cooked = std::make_shared<Button>(sf::Sprite(), sf::IntRect(800, 0, 100, 50), b1_0, b1_1, b1_2,
+                                                        "");
+        drink_is_cooked->m_sprite.setPosition(800, 0);
+        drink_is_cooked->scale({4, 11});
+        drink_is_cooked->m_press_f = [this]() {
+            m_bank.spend_f_curr_acc(m_ic.price(m_id));
+            m_lcd->set_string(std::to_string(m_bank.get_curr_acc()) + "p.");
+            switchStatus("Ожидание UI");
+        };
 ////////////////////////////////////////////////////
         auto rect = std::make_shared<sf::RectangleShape>(sf::Vector2f(1200, 550));
         rect->setFillColor(sf::Color(0, 0, 0, 0));
@@ -228,11 +240,11 @@ struct STD {
                                              {},
                                              {m_mB, m_drink_is_cooking},
                                              {m_mB, m_drink_is_cooking, rect, rect1, rect2, rect3}};
-        m_status["Забрать товар"] = {{},
-                                     {},
-                                     {},
-                                     {m_mB},
-                                     {m_mB}};
+        m_status["Забрать товар"] = {{drink_is_cooked},
+                                     {drink_is_cooked},
+                                     {drink_is_cooked},
+                                     {m_mB, drink_is_cooked},
+                                     {m_mB, drink_is_cooked}};
         switchStatus("Ожидание UI");
     }
 

@@ -30,3 +30,6 @@ std::string CoffeeChecker::description(uint64_t id) {
     return m_content.at(id)["description"].get<std::string>();
 }
 
+uint64_t CoffeeChecker::price(uint64_t id) {
+    return m_content.at(id)["price"];
+}

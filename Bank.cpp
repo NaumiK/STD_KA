@@ -27,5 +27,10 @@ std::array<uint64_t, 4> Bank::get_change() {
         else res[i] = coins_available[i], coins_available[i] = 0;
         curr_acc -= nom[i] * res[i];
     }
+    curr_acc = 0;
     return res;
+}
+
+void Bank::spend_f_curr_acc(uint64_t value) {
+    curr_acc -= value;
 }

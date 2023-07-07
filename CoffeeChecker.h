@@ -16,6 +16,7 @@ public:
     std::string volume(uint64_t id);
     std::string name_volume(uint64_t id);
     std::string description(uint64_t id);
+    uint64_t price(uint64_t id);
 };
 
 #endif //STD_PRJ_COFFEECHECKER_H
