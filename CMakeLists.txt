@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.24)
 set(CMAKE_CXX_STANDARD 20)
 project(STD_PRJ)
 add_executable(STD_PRJ main.cpp Animator.cpp
-        Button.cpp TextButton.cpp
+        Button.cpp TextButton.cpp SoundAnimationChain.h
         NumKeyBoard.cpp FuncWithDesc.h ChooseDialog.cpp
         AssetManager.cpp UserCursor.cpp
         LCDRowDisplay.cpp MessageBar.cpp
