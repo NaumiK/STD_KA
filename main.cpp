@@ -1,14 +1,19 @@
 #include <utility>
 #include <sstream>
+#include <fstream>
 
 #include "KA_UI.h"
 #include "Bank.h"
 #include "Status.h"
+#include "CoffeeChecker.h"
+
+
+
+using json = nlohmann::json;
 
 struct STD {
     std::unique_ptr<sf::RenderWindow> m_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(1600, 550),
                                                                                     "Test Manager",
-                                                                                    sf::Style::Titlebar |
                                                                                     sf::Style::Close);
     std::map<std::string, Status> m_status;
     const std::string hello_message = "Insert money and choose your drink :)";
@@ -18,7 +23,8 @@ struct STD {
     UserCursor m_cursor;
     Bank m_bank{};
     std::shared_ptr<MessageBar> m_mB = std::make_shared<MessageBar>(5, 36, sf::seconds(0.05), sf::Vector2i(0, 400));
-    std::shared_ptr<LCDRowDisplay> m_lcd = std::make_shared<LCDRowDisplay>(sf::Sprite(), Animation(), sf::Text(), hello_message, 16,
+    std::shared_ptr<LCDRowDisplay> m_lcd = std::make_shared<LCDRowDisplay>(sf::Sprite(), Animation(), sf::Text(),
+                                                                           hello_message, 16,
                                                                            sf::seconds(0.03), "media/jm.otf");
 
     void add_money(uint64_t x) {
@@ -31,10 +37,64 @@ struct STD {
     void get_change() {
         auto [p10, p5, p2, p1] = m_bank.get_change();
         std::stringstream ss;
-        ss << "You have received the change: 10p.(" << p10 << "), 5p.(" << p5 << "), 2p.(" << p2 << "), 1p.(" << p1 << ")";
+        ss << "You have received the change: 10p.(" << p10 << "), 5p.(" << p5 << "), 2p.(" << p2 << "), 1p.(" << p1
+           << ")";
         m_mB->leave_message(ss.str());
         m_lcd->set_string(hello_message);
     }
+
+    CoffeeChecker m_ic;
+
+    struct IdInput : public NumKeyBoard {
+        STD *m_std = nullptr;
+        uint64_t m_id = 0, m_max_digit = 1000, m_digit = m_max_digit;
+
+        static std::string printId(uint64_t id, uint64_t digit) {
+            std::stringstream ss;
+            for (; digit != 0; digit /= 10) ss << (id / digit) % 10;
+            std::cout << id << std::endl;
+            return ss.str();
+        }
+
+        void keySignal(uint64_t key) override {
+            if (m_std != nullptr && m_digit == m_max_digit)
+                m_std->switchStatus("Набор с клавиатуры");
+            if (m_digit > 0) {
+                m_id += m_digit * key;
+                m_digit /= 10;
+            }
+            if (m_digit == 0) {
+                if (m_std->m_ic.m_content.contains(m_id))
+                    m_std->m_mB->leave_message("You have chosen " + m_std->m_ic.name_volume(m_id));
+                if (m_std->m_ic.checkPrice(m_id, m_std->m_bank.get_curr_acc())) {
+                    m_std->switchStatus("Забрать товар");
+                    return;
+                }
+                else {
+                    m_std->m_lcd->set_string("Not enough money or wrong id");
+                    m_std->switchStatus("Ожидание UI");
+                    reset();
+                    return;
+                }
+            }
+            m_std->m_lcd->set_string(printId(m_id, m_max_digit));
+        }
+
+        void reset() {
+            m_id = 0;
+            m_digit = m_max_digit;
+        }
+
+        IdInput(uint64_t k, uint64_t cols,
+                const sf::Vector2i &pos0, const sf::Vector2i &distance, const sf::Vector2i &size,
+                const sf::Vector2f &scale,
+                const Animation &hoverAnim, const Animation &pressAnim, const Animation &releaseAnim,
+                const std::string &hover_s, const std::string &unhover_s,
+                const std::string &press_s, const std::string &release_s,
+                const std::string &filename_prefix = "media/audio/c")
+                : NumKeyBoard(k, cols, pos0, distance, size, scale, hoverAnim, pressAnim, releaseAnim,
+                              hover_s, unhover_s, press_s, release_s, filename_prefix) {}
+    };
 
     STD() {
         Animation b1_1 = {"press", "media/images/b1_1.png",
@@ -58,12 +118,15 @@ struct STD {
                           sf::Vector2i(64, 81), sf::seconds(0.4),
                           sf::Color(0, 255, 0), false};
         m_window->setMouseCursorVisible(false);
-        auto nkB = std::make_shared<NumKeyBoard>(10, 3,
-                                                 sf::Vector2i(1275, 80), sf::Vector2i(5, 20), sf::Vector2i(100, 50),
-                                                 sf::Vector2f(1, 1),
-                                                 b1_0, b1_1, b1_2,
-                                                 "media/audio/p2_1.wav", "media/audio/p2_2.wav", "media/audio/p1_1.wav",
-                                                 "media/audio/p1_2.wav");
+        auto nkB = std::make_shared<IdInput>(10, 3,
+                                             sf::Vector2i(1275, 100), sf::Vector2i(5, 20), sf::Vector2i(100, 50),
+                                             sf::Vector2f(1, 1),
+                                             b1_0, b1_1, b1_2,
+                                             "media/audio/p2_1.wav", "media/audio/p2_2.wav", "media/audio/p1_1.wav",
+                                             "media/audio/p1_2.wav");
+        nkB->m_std = this;
+        std::ifstream fin("media/coffee.json");
+        fin >> m_ic;
         m_lcd->standard_user_settings_LCDDisplay(m_lcd->m_text);
         m_lcd->scale({1, 2});
         m_lcd->m_text.setLetterSpacing(1.5);
@@ -123,13 +186,16 @@ struct STD {
         rect3->setFillColor(sf::Color(0, 0, 0, 0));
         rect3->setOutlineColor(sf::Color(255, 255, 255));
         rect3->setOutlineThickness(2);
+        auto rect4 = std::make_shared<sf::RectangleShape>(sf::Vector2f(312, 80));
+        rect4->setFillColor(sf::Color(66, 138, 245));
+        rect4->setPosition(1275, 0);
 ////////////////////////////////////////////////////
 
         m_status["Ожидание UI"] = {{nkB,  change_button, coin_receiver, money_receiver},
                                    {nkB,  change_button, coin_receiver, money_receiver},
                                    {nkB,  change_button, coin_receiver, money_receiver},
                                    {m_mB, m_lcd,         nkB,           change_button, coin_receiver, money_receiver},
-                                   {rect, rect3,         rect2,         rect1,         m_mB,          m_lcd, nkB, change_button, coin_tray, coin_receiver, money_receiver, money_receiver}};
+                                   {rect, rect3,         rect2,         rect1,         rect4,         m_mB, m_lcd, nkB, change_button, coin_tray, coin_receiver, money_receiver, money_receiver}};
         m_status["Ожидание оплаты (монеты)"] = {{coin_dialog},
                                                 {coin_dialog},
                                                 {coin_dialog},

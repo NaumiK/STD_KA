@@ -1,0 +1,22 @@
+{
+  "objects": [
+    {
+      "id": 11,
+      "name": "cappuccino",
+      "volume": "100 ml.",
+      "price": 100
+    },
+    {
+      "id": 12,
+      "name": "cappuccino",
+      "price": 50,
+      "volume": "50 ml."
+    },
+    {
+      "id": 21,
+      "name": "espresso",
+      "price": 25,
+      "volume": ""
+    }
+  ]
+}
