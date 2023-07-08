@@ -129,6 +129,18 @@ struct STD {
                           9, 3,
                           sf::Vector2i(64, 81), sf::seconds(0.4),
                           sf::Color(0, 255, 0), false};
+        Animation lcd_1 = {"blink", "media/images/LCD_1.png",
+                           8, 3,
+                           {340, 80}, sf::seconds(1),
+                           {0, 255, 0}, true};
+        Animation cr_1 = {"press", "media/images/cr_1.png",
+                          1, 1,
+                          {50, 50}, sf::seconds(1.5),
+                          {0, 255, 0}, false};
+        Animation cr_2 = {"release", "media/images/cr_2.png",
+                          9, 3,
+                          {50, 50}, sf::seconds(1.5),
+                          {0, 255, 0}, false};
         m_window->setMouseCursorVisible(false);
         auto nkB = std::make_shared<IdInput>(10, 3,
                                              sf::Vector2i(1275, 100), sf::Vector2i(5, 20), sf::Vector2i(100, 50),
@@ -139,11 +151,14 @@ struct STD {
         nkB->m_std = this;
         std::ifstream fin("media/coffee.json");
         fin >> m_ic;
+        m_lcd->m_bck_ar.addAnimation(lcd_1);
+        m_lcd->m_bck_ar.switchAnimation("blink");
+        m_lcd->m_bck_ar.endAnim = false;
         m_lcd->standard_user_settings_LCDDisplay(m_lcd->m_text);
-        m_lcd->scale({1, 2});
+        m_lcd->m_bck_sprite.setPosition(1261, 0);
+        m_lcd->m_text.scale({1, 2});
         m_lcd->m_text.setLetterSpacing(1.5);
         m_lcd->m_text.setPosition(1275, 15);
-        m_lcd->m_bck_sprite.setPosition(1275, 15);
         auto change_button = std::make_shared<Button>(sf::Sprite(), sf::IntRect(1200, 100, 50, 100),
                                                       Animation("hover"), b2_1, b2_2,
                                                       "", "", "media/audio/p2_1.wav", "media/audio/p2_2.wav");
@@ -152,13 +167,14 @@ struct STD {
         coin_tray->setPosition(1214, 220);
 //        auto coin_receiver = std::make_shared<sf::RectangleShape>(sf::Vector2f(50, 50));
 //        coin_receiver->setPosition(1214, 15);
-        auto coin_receiver = std::make_shared<Button>(sf::Sprite(), sf::IntRect(1214, 15, 100, 50), b1_0, b1_1, b1_2,
-                                                      "", "", "", "");
-        coin_receiver->scale({0.5, 1.0});
+        auto coin_receiver = std::make_shared<Button>(sf::Sprite(), sf::IntRect(1210, 15, 50, 50), cr_1, cr_1, cr_2,
+                                                      "", "", "", "media/audio/coin.ogg");
+//        coin_receiver->scale({0.5, 1.0});
         coin_receiver->m_press_f = [this]() { this->switchStatus("Ожидание оплаты (монеты)"); };
 //        auto money_receiver = std::make_shared<sf::RectangleShape>(sf::Vector2f(130, 75));
 //        money_receiver->setPosition(1370, 365);
-        auto money_receiver = std::make_shared<Button>(sf::Sprite(), sf::IntRect(1370, 365, 100, 50), b1_0, b1_1, b1_2);
+        auto money_receiver = std::make_shared<Button>(sf::Sprite(), sf::IntRect(1370, 380, 100, 50),
+                                                       b1_0, b1_1, b1_2, "", "", "", "media/audio/money_insert.wav");
         money_receiver->scale({1.3, 1.5});
         money_receiver->m_press_f = [this]() { this->switchStatus("Ожидание оплаты (купюры)"); };
         auto coin_dialog = std::make_shared<ChooseDialog>(std::vector<FuncWithDesc>{
@@ -188,11 +204,15 @@ struct STD {
                                                         "");
         drink_is_cooked->m_sprite.setPosition(800, 0);
         drink_is_cooked->scale({4, 11});
-        drink_is_cooked->m_press_f = [this]() {
+        drink_is_cooked->m_release_f = [this]() {
             m_bank.spend_f_curr_acc(m_ic.price(m_id));
             m_lcd->set_string(std::to_string(m_bank.get_curr_acc()) + "p.");
             switchStatus("Ожидание UI");
         };
+
+        auto nkB_bck = std::make_shared<sf::Sprite>();
+        nkB_bck->setPosition(1275, 80);
+        nkB_bck->setTexture(AssetManager::getTexture("media/images/KeyBoardBackground.png"));
 ////////////////////////////////////////////////////
         auto rect = std::make_shared<sf::RectangleShape>(sf::Vector2f(1200, 550));
         rect->setFillColor(sf::Color(0, 0, 0, 0));
@@ -210,31 +230,28 @@ struct STD {
         rect3->setFillColor(sf::Color(0, 0, 0, 0));
         rect3->setOutlineColor(sf::Color(255, 255, 255));
         rect3->setOutlineThickness(2);
-        auto rect4 = std::make_shared<sf::RectangleShape>(sf::Vector2f(312, 80));
-        rect4->setFillColor(sf::Color(66, 138, 245));
-        rect4->setPosition(1275, 0);
 ////////////////////////////////////////////////////
 
         m_status["Ожидание UI"] = {{nkB,  change_button, coin_receiver, money_receiver},
                                    {nkB,  change_button, coin_receiver, money_receiver},
                                    {nkB,  change_button, coin_receiver, money_receiver},
                                    {m_mB, m_lcd,         nkB,           change_button, coin_receiver, money_receiver},
-                                   {rect, rect3,         rect2,         rect1,         rect4,         m_mB, m_lcd, nkB, change_button, coin_tray, coin_receiver, money_receiver, money_receiver}};
+                                   {rect, rect3,         rect2,         rect1,         m_mB,          m_lcd, nkB_bck, nkB, change_button, coin_tray, coin_receiver, money_receiver, money_receiver}};
         m_status["Ожидание оплаты (монеты)"] = {{coin_dialog},
                                                 {coin_dialog},
                                                 {coin_dialog},
                                                 {m_mB, m_lcd, coin_dialog, coin_receiver},
-                                                {rect, rect3, rect2,       rect1, m_mB, m_lcd, nkB, change_button, coin_tray, coin_receiver, money_receiver, coin_dialog}};
+                                                {rect, rect3, rect2,       rect1, m_mB, m_lcd, nkB_bck, nkB, change_button, coin_tray, coin_receiver, money_receiver, coin_dialog}};
         m_status["Ожидание оплаты (купюры)"] = {{money_dialog},
                                                 {money_dialog},
                                                 {money_dialog},
                                                 {m_mB, m_lcd, money_dialog, money_receiver},
-                                                {rect, rect3, rect2,        rect1, m_mB, m_lcd, nkB, change_button, coin_tray, coin_receiver, money_receiver, money_dialog}};
+                                                {rect, rect3, rect2,        rect1, m_mB, m_lcd, nkB_bck, nkB, change_button, coin_tray, coin_receiver, money_receiver, money_dialog}};
         m_status["Набор с клавиатуры"] = {{nkB},
                                           {nkB},
                                           {nkB},
                                           {m_mB, m_lcd, nkB,   change_button},
-                                          {rect, rect3, rect2, rect1, m_mB, m_lcd, nkB, change_button, coin_tray, coin_receiver, money_receiver}};
+                                          {rect, rect3, rect2, rect1, m_mB, m_lcd, nkB_bck, nkB, change_button, coin_tray, coin_receiver, money_receiver}};
         m_status["Приготовление напитка"] = {{},
                                              {},
                                              {},
