@@ -135,11 +135,19 @@ struct STD {
                            {0, 255, 0}, true};
         Animation cr_1 = {"press", "media/images/cr_1.png",
                           1, 1,
-                          {50, 50}, sf::seconds(1.5),
+                          {50, 50}, sf::seconds(0.3),
                           {0, 255, 0}, false};
         Animation cr_2 = {"release", "media/images/cr_2.png",
                           9, 3,
                           {50, 50}, sf::seconds(1.5),
+                          {0, 255, 0}, false};
+        Animation mr_1 = {"press", "media/images/mr_1.png",
+                          1, 1,
+                          {130, 75}, sf::seconds(0.3),
+                          {0, 255, 0}, false};
+        Animation mr_2 = {"release", "media/images/mr_2.png",
+                          16, 1,
+                          {130, 75}, sf::seconds(2),
                           {0, 255, 0}, false};
         m_window->setMouseCursorVisible(false);
         auto nkB = std::make_shared<IdInput>(10, 3,
@@ -173,9 +181,9 @@ struct STD {
         coin_receiver->m_press_f = [this]() { this->switchStatus("Ожидание оплаты (монеты)"); };
 //        auto money_receiver = std::make_shared<sf::RectangleShape>(sf::Vector2f(130, 75));
 //        money_receiver->setPosition(1370, 365);
-        auto money_receiver = std::make_shared<Button>(sf::Sprite(), sf::IntRect(1370, 380, 100, 50),
-                                                       b1_0, b1_1, b1_2, "", "", "", "media/audio/money_insert.wav");
-        money_receiver->scale({1.3, 1.5});
+        auto money_receiver = std::make_shared<Button>(sf::Sprite(), sf::IntRect(1370, 380, 130, 75),
+                                                       mr_1, mr_1, mr_2, "", "", "", "media/audio/money_insert.wav");
+//        money_receiver->scale({1.3, 1.5});
         money_receiver->m_press_f = [this]() { this->switchStatus("Ожидание оплаты (купюры)"); };
         auto coin_dialog = std::make_shared<ChooseDialog>(std::vector<FuncWithDesc>{
                                                                   {"1p.",   [this]() { add_money(1); }},

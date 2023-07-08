@@ -3,9 +3,9 @@
 
 int main() {
     AssetManager *am = AssetManager::getInstance();
-    Animation anim = {"press", "media/images/cr_1.png",
-                      1, 1,
-                      {50, 50}, sf::seconds(1.5),
+    Animation anim = {"release", "media/images/mr_2.png",
+                      16, 1,
+                      {130, 75}, sf::seconds(1.5),
                       {0, 255, 0}, false};
     sf::Sprite sprite;
     Animator ar(sprite);
