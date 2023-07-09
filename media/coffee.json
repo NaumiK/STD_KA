@@ -1,22 +1,58 @@
 {
   "objects": [
     {
-      "id": 11,
+      "id": 101,
       "name": "cappuccino",
-      "volume": "100 ml.",
-      "price": 100
+      "volume": "150 ml.",
+      "price": 55
     },
     {
-      "id": 12,
+      "id": 102,
       "name": "cappuccino",
       "price": 50,
+      "volume": "100 ml."
+    },
+    {
+      "id": 103,
+      "name": "cappuccino",
+      "price": 40,
       "volume": "50 ml."
     },
     {
-      "id": 21,
+      "id": 201,
       "name": "espresso",
-      "price": 25,
-      "volume": ""
+      "price": 55,
+      "volume": "150 ml."
+    },
+    {
+      "id": 202,
+      "name": "espresso",
+      "price": 50,
+      "volume": "100 ml."
+    },
+    {
+      "id": 203,
+      "name": "espresso",
+      "price": 40,
+      "volume": "50 ml."
+    },
+    {
+      "id": 301,
+      "name": "hot chocolate",
+      "price": 55,
+      "volume": "150 ml."
+    },
+    {
+      "id": 302,
+      "name": "hot chocolate",
+      "price": 50,
+      "volume": "100 ml."
+    },
+    {
+      "id": 303,
+      "name": "hot chocolate",
+      "price": 40,
+      "volume": "50 ml."
     }
   ]
 }
