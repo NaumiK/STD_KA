@@ -10,7 +10,7 @@
 
 struct STD {
     std::unique_ptr<sf::RenderWindow> m_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(1600, 550),
-                                                                                    "Test Manager",
+                                                                                    "STD KA",
                                                                                     sf::Style::Close);
     std::map<std::string, Status> m_status;
     const std::string hello_message = "Insert money and choose your drink :)";
@@ -41,12 +41,12 @@ struct STD {
     }
 
     CoffeeChecker m_ic;
-    uint64_t m_id{};
     std::shared_ptr<Button> m_drink_is_cooked;
 
 
     struct IdInput : public NumKeyBoard {
         STD *m_std = nullptr;
+        uint64_t m_id{};
         uint64_t m_max_digit = 1000, m_digit = m_max_digit;
 
         static std::string printId(uint64_t id, uint64_t digit) {
@@ -59,16 +59,16 @@ struct STD {
             if (m_std != nullptr && m_digit == m_max_digit)
                 m_std->switchStatus("Набор с клавиатуры");
             if (m_digit > 0) {
-                m_std->m_id += m_digit * key;
+               m_id += m_digit * key;
                 m_digit /= 10;
             }
-            m_std->m_lcd->set_string(printId(m_std->m_id, m_max_digit));
+            m_std->m_lcd->set_string(printId(m_id, m_max_digit));
             if (m_digit == 0) {
-                if (m_std->m_ic.m_content.contains(m_std->m_id))
-                    m_std->m_mB->leave_message("You have chosen " + m_std->m_ic.name_volume(m_std->m_id));
-                if (m_std->m_ic.checkPrice(m_std->m_id, m_std->m_bank.get_curr_acc())) {
+                if (m_std->m_ic.m_content.contains(m_id))
+                    m_std->m_mB->leave_message("You have chosen " + m_std->m_ic.name_volume(m_id));
+                if (m_std->m_ic.checkPrice(m_id, m_std->m_bank.get_curr_acc())) {
                     m_std->m_drink_is_cooking->restart();
-                    m_std->m_lcd->set_string("Your drink is cooking...");
+                    m_std->m_lcd->set_string("Your drink, " + m_std->m_ic.name_volume(m_id) +", is cooking...");
                     m_std->switchStatus("Приготовление напитка");
                     return;
                 } else {
@@ -81,7 +81,7 @@ struct STD {
         }
 
         void reset() {
-            m_std->m_id = 0;
+            m_id = 0;
             m_digit = m_max_digit;
         }
 
@@ -172,11 +172,11 @@ struct STD {
                            {0, 255, 0}, true};
         Animation cff_4 = {"press", "media/images/cff_4.png",
                            8, 3,
-                           {200, 260}, sf::seconds(0.8),
+                           {200, 260}, sf::seconds(0.6),
                            {0, 255, 0}, false};
         Animation cff_5 = {"release", "media/images/cff_5.png",
                            8, 3,
-                           {200, 260}, sf::seconds(0.8),
+                           {200, 260}, sf::seconds(0.6),
                            {0, 255, 0}, false};
         Animation cff_0 = {"wait", "media/images/cff_1.png",
                            1, 1,
@@ -267,7 +267,7 @@ struct STD {
         drink_is_cooked->m_ar.switchAnimation("wait");
         drink_is_cooked->m_ar.endAnim = false;
         drink_is_cooked->m_release_f = [this]() {
-            m_bank.spend_f_curr_acc(m_ic.price(m_id));
+            m_bank.spend_f_curr_acc(m_ic.price(m_nkB->m_id));
             m_lcd->set_string(std::to_string(m_bank.get_curr_acc()) + "p.");
             switchStatus("Ожидание UI");
             m_nkB->reset();
