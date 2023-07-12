@@ -12,6 +12,7 @@
 #include "LCDRowDisplay.h"
 #include "UserCursor.h"
 #include "AssetManager.h"
+#include "AnimationManager.h"
 #include "TextButton.h"
 #include "ChooseDialog.h"
 #include "MessageBar.h"

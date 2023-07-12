@@ -15,6 +15,7 @@ struct STD {
     std::map<std::string, Status> m_status;
     const std::string hello_message = "Insert money and choose your drink :)";
     AssetManager *m_am = AssetManager::getInstance();
+    AnimationManager *m_aniM = AnimationManager::getInstance();
     Status *m_cur_status = nullptr;
     bool status_switched = false;
     UserCursor m_cursor;
@@ -59,7 +60,7 @@ struct STD {
             if (m_std != nullptr && m_digit == m_max_digit)
                 m_std->switchStatus("Набор с клавиатуры");
             if (m_digit > 0) {
-               m_id += m_digit * key;
+                m_id += m_digit * key;
                 m_digit /= 10;
             }
             m_std->m_lcd->set_string(printId(m_id, m_max_digit));
@@ -68,7 +69,7 @@ struct STD {
                     m_std->m_mB->leave_message("You have chosen " + m_std->m_ic.name_volume(m_id));
                 if (m_std->m_ic.checkPrice(m_id, m_std->m_bank.get_curr_acc())) {
                     m_std->m_drink_is_cooking->restart();
-                    m_std->m_lcd->set_string("Your drink, " + m_std->m_ic.name_volume(m_id) +", is cooking...");
+                    m_std->m_lcd->set_string("Your drink, " + m_std->m_ic.name_volume(m_id) + ", is cooking...");
                     m_std->switchStatus("Приготовление напитка");
                     return;
                 } else {
@@ -126,86 +127,20 @@ struct STD {
     std::shared_ptr<IdInput> m_nkB;
 
     STD() {
-        Animation b1_1 = {"press", "media/images/b1_1.png",
-                          17, 5,
-                          {100, 50}, sf::seconds(0.8),
-                          {0, 255, 0}, false};
-        Animation b1_2 = {"release", "media/images/b1_2.png",
-                          9, 3,
-                          {100, 50}, sf::seconds(0.4),
-                          {0, 255, 0}, false};
-        Animation b1_0 = {"hover", "media/images/b1_0.png",
-                          9, 3,
-                          {100, 50}, sf::seconds(0.4),
-                          {0, 255, 0}, true};
-        Animation b2_1 = {"press", "media/images/b2_1.png",
-                          17, 5,
-                          {64, 81}, sf::seconds(0.8),
-                          {0, 255, 0}, false};
-        Animation b2_2 = {"release", "media/images/b2_2.png",
-                          9, 3,
-                          sf::Vector2i(64, 81), sf::seconds(0.4),
-                          sf::Color(0, 255, 0), false};
-        Animation lcd_1 = {"blink", "media/images/LCD_1.png",
-                           8, 3,
-                           {340, 80}, sf::seconds(1),
-                           {0, 255, 0}, true};
-        Animation cr_1 = {"press", "media/images/cr_1.png",
-                          1, 1,
-                          {50, 50}, sf::seconds(0.3),
-                          {0, 255, 0}, false};
-        Animation cr_2 = {"release", "media/images/cr_2.png",
-                          9, 3,
-                          {50, 50}, sf::seconds(1.5),
-                          {0, 255, 0}, false};
-        Animation cff_1 = {"falling", "media/images/cff_1.png",
-                           8, 3,
-                           {200, 260}, sf::seconds(0.4),
-                           {0, 255, 0}, false};
-        Animation cff_2 = {"hover", "media/images/cff_2.png",
-                           1, 1,
-                           {200, 260}, sf::seconds(0.1),
-                           {0, 255, 0}, false};
-        Animation cff_3 = {"fill", "media/images/cff_3.png",
-                           8, 3,
-                           {200, 260}, sf::seconds(0.8),
-                           {0, 255, 0}, true};
-        Animation cff_4 = {"press", "media/images/cff_4.png",
-                           8, 3,
-                           {200, 260}, sf::seconds(0.6),
-                           {0, 255, 0}, false};
-        Animation cff_5 = {"release", "media/images/cff_5.png",
-                           8, 3,
-                           {200, 260}, sf::seconds(0.6),
-                           {0, 255, 0}, false};
-        Animation cff_0 = {"wait", "media/images/cff_1.png",
-                           1, 1,
-                           {200, 260}, sf::seconds(0.01),
-                           {0, 255, 0}, false};
-        Animation cr_0 = cr_1;
-        cr_0.name = "hover";
-        Animation mr_1 = {"press", "media/images/mr_1.png",
-                          1, 1,
-                          {130, 75}, sf::seconds(0.3),
-                          {0, 255, 0}, false};
-        Animation mr_2 = {"release", "media/images/mr_2.png",
-                          16, 1,
-                          {130, 75}, sf::seconds(2),
-                          {0, 255, 0}, false};
-        Animation mr_0 = mr_1;
-        mr_0.name = "hover";
+        auto getAnim = AnimationManager::getAnimation;
+        m_aniM->loadFile("media/animations.json");
         m_window->setMouseCursorVisible(false);
         auto nkB = std::make_shared<IdInput>(10, 3,
                                              sf::Vector2i(1275, 100), sf::Vector2i(5, 20), sf::Vector2i(100, 50),
                                              sf::Vector2f(1, 1),
-                                             b1_0, b1_1, b1_2,
+                                             getAnim("b1_0"), getAnim("b1_1"), getAnim("b1_2"),
                                              "media/audio/p2_1.wav", "media/audio/p2_2.wav", "media/audio/p1_1.wav",
                                              "media/audio/p1_2.wav");
         m_nkB = nkB;
         nkB->m_std = this;
         std::ifstream fin("media/coffee.json");
         fin >> m_ic;
-        m_lcd->m_bck_ar.addAnimation(lcd_1);
+        m_lcd->m_bck_ar.addAnimation(getAnim("lcd_1"));
         m_lcd->m_bck_ar.switchAnimation("blink");
         m_lcd->m_bck_ar.endAnim = false;
         m_lcd->standard_user_settings_LCDDisplay(m_lcd->m_text);
@@ -214,7 +149,7 @@ struct STD {
         m_lcd->m_text.setLetterSpacing(1.5);
         m_lcd->m_text.setPosition(1275, 15);
         auto change_button = std::make_shared<Button>(sf::Sprite(), sf::IntRect(1200, 100, 50, 100),
-                                                      Animation("hover"), b2_1, b2_2,
+                                                      Animation("hover"), getAnim("b2_1"), getAnim("b2_2"),
                                                       "", "", "media/audio/p2_1.wav", "media/audio/p2_2.wav");
         change_button->m_press_f = [this]() { get_change(); };
 //        auto coin_tray = std::make_shared<sf::RectangleShape>(sf::Vector2f(50, 50));
@@ -223,14 +158,16 @@ struct STD {
         coin_tray->setPosition(1214, 220);
 //        auto coin_receiver = std::make_shared<sf::RectangleShape>(sf::Vector2f(50, 50));
 //        coin_receiver->setPosition(1214, 15);
-        auto coin_receiver = std::make_shared<Button>(sf::Sprite(), sf::IntRect(1210, 15, 50, 50), cr_0, cr_1, cr_2,
+        auto coin_receiver = std::make_shared<Button>(sf::Sprite(), sf::IntRect(1210, 15, 50, 50),
+                                                      getAnim("cr_0"), getAnim("cr_1"), getAnim("cr_2"),
                                                       "", "", "", "media/audio/coin.ogg");
 //        coin_receiver->scale({0.5, 1.0});
         coin_receiver->m_press_f = [this]() { this->switchStatus("Ожидание оплаты (монеты)"); };
 //        auto money_receiver = std::make_shared<sf::RectangleShape>(sf::Vector2f(130, 75));
 //        money_receiver->setPosition(1370, 365);
         auto money_receiver = std::make_shared<Button>(sf::Sprite(), sf::IntRect(1370, 380, 130, 75),
-                                                       mr_0, mr_1, mr_2, "", "", "", "media/audio/money_insert.wav");
+                                                       getAnim("mr_0"), getAnim("mr_1"), getAnim("mr_2"), "", "", "",
+                                                       "media/audio/money_insert.wav");
 //        money_receiver->scale({1.3, 1.5});
         money_receiver->m_press_f = [this]() { this->switchStatus("Ожидание оплаты (купюры)"); };
         auto coin_dialog = std::make_shared<ChooseDialog>(std::vector<FuncWithDesc>{
@@ -254,16 +191,16 @@ struct STD {
                                                            sf::Vector2f(1, 1));
 //        auto m_drink_is_cooking = std::make_shared<Button>(sf::Sprite(), sf::IntRect(), b1_0, b1_1, b1_2, "");
         m_drink_is_cooking->m_sprite.setPosition(900, 175);
-        m_drink_is_cooking->m_ar.addAnimation(cff_0);
-        m_drink_is_cooking->m_ar.addAnimation(cff_1);
-        m_drink_is_cooking->m_ar.addAnimation(cff_2);
-        m_drink_is_cooking->m_ar.addAnimation(cff_3);
-        auto drink_is_cooked = std::make_shared<Button>(sf::Sprite(), sf::IntRect(900, 175, 200, 260), cff_2, cff_4,
-                                                        cff_5,
+        m_drink_is_cooking->m_ar.addAnimation(getAnim("cff_0"));
+        m_drink_is_cooking->m_ar.addAnimation(getAnim("cff_1"));
+        m_drink_is_cooking->m_ar.addAnimation(getAnim("cff_2"));
+        m_drink_is_cooking->m_ar.addAnimation(getAnim("cff_3"));
+        auto drink_is_cooked = std::make_shared<Button>(sf::Sprite(), sf::IntRect(900, 175, 200, 260),
+                                                        getAnim("cff_2"), getAnim("cff_4"), getAnim("cff_5"),
                                                         "");
         m_drink_is_cooked = drink_is_cooked;
         drink_is_cooked->m_sprite.setPosition(900, 175);
-        drink_is_cooked->m_ar.addAnimation(cff_0);
+        drink_is_cooked->m_ar.addAnimation(getAnim("cff_0"));
         drink_is_cooked->m_ar.switchAnimation("wait");
         drink_is_cooked->m_ar.endAnim = false;
         drink_is_cooked->m_release_f = [this]() {
@@ -323,7 +260,7 @@ struct STD {
                                              {},
                                              {},
                                              {m_mB, m_drink_is_cooking, m_lcd, nkB},
-                                             {m_mB, m_drink_is_cooking, info, rect, rect1, rect3, m_lcd, nkB_bck, nkB, change_button, coin_tray, coin_receiver, money_receiver}};
+                                             {m_mB, m_drink_is_cooking, info,  rect, rect1, rect3, m_lcd, nkB_bck, nkB, change_button, coin_tray, coin_receiver, money_receiver}};
         m_status["Забрать товар"] = {{drink_is_cooked},
                                      {drink_is_cooked},
                                      {drink_is_cooked},
@@ -335,6 +272,7 @@ struct STD {
     ~STD() {
         m_cur_status = nullptr;
         delete m_am;
+        delete m_aniM;
     }
 
     void input() {

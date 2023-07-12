@@ -1,0 +1,202 @@
+{
+  "objects": [
+    {
+      "id_name": "b1_1",
+      "name": "press",
+      "texture_path": "media/images/b1_1.png",
+      "total_frame": 17,
+      "columns": 5,
+      "frame_size": [100, 50],
+      "duration": 0.8,
+      "mask_color": [0, 255, 0, 255],
+      "isLoop": false
+    },
+    {
+      "id_name": "b1_2",
+      "name": "release",
+      "texture_path": "media/images/b1_2.png",
+      "total_frame": 9,
+      "columns": 3,
+      "frame_size": [100, 50],
+      "duration": 0.4,
+      "mask_color": [0, 255, 0, 255],
+      "isLoop": false
+    },
+    {
+      "id_name": "b1_0",
+      "name": "hover",
+      "texture_path": "media/images/b1_0.png",
+      "total_frame": 9,
+      "columns": 3,
+      "frame_size": [100, 50],
+      "duration": 0.4,
+      "mask_color": [0, 255, 0, 255],
+      "isLoop": true
+    },
+    {
+      "id_name": "b2_1",
+      "name": "press",
+      "texture_path": "media/images/b2_1.png",
+      "total_frame": 17,
+      "columns": 5,
+      "frame_size": [64, 81],
+      "duration": 0.8,
+      "mask_color": [0, 255, 0, 255],
+      "isLoop": false
+    },
+    {
+      "id_name": "b2_2",
+      "name": "release",
+      "texture_path": "media/images/b2_2.png",
+      "total_frame": 9,
+      "columns": 3,
+      "frame_size": [64, 81],
+      "duration": 0.4,
+      "mask_color": [0, 255, 0, 255],
+      "isLoop": false
+    },
+    {
+      "id_name": "lcd_1",
+      "name": "blink",
+      "texture_path": "media/images/LCD_1.png",
+      "total_frame": 8,
+      "columns": 3,
+      "frame_size": [340, 80],
+      "duration": 1,
+      "mask_color": [0, 255, 0, 255],
+      "isLoop": true
+    },
+    {
+      "id_name": "cr_0",
+      "name": "hover",
+      "texture_path": "media/images/cr_1.png",
+      "total_frame": 1,
+      "columns": 1,
+      "frame_size": [50, 50],
+      "duration": 0.01,
+      "mask_color": [0, 255, 0, 255],
+      "isLoop": false
+    },
+    {
+      "id_name": "cr_1",
+      "name": "press",
+      "texture_path": "media/images/cr_1.png",
+      "total_frame": 1,
+      "columns": 1,
+      "frame_size": [50, 50],
+      "duration": 0.01,
+      "mask_color": [0, 255, 0, 255],
+      "isLoop": false
+    },
+    {
+      "id_name": "cr_2",
+      "name": "release",
+      "texture_path": "media/images/cr_2.png",
+      "total_frame": 9,
+      "columns": 3,
+      "frame_size": [50, 50],
+      "duration": 1.5,
+      "mask_color": [0, 255, 0, 255],
+      "isLoop": false
+    },
+    {
+      "id_name": "mr_0",
+      "name": "hover",
+      "texture_path": "media/images/mr_1.png",
+      "total_frame": 1,
+      "columns": 1,
+      "frame_size": [130, 75],
+      "duration": 0.01,
+      "mask_color": [0, 255, 0, 255],
+      "isLoop": false
+    },
+    {
+      "id_name": "mr_1",
+      "name": "press",
+      "texture_path": "media/images/mr_1.png",
+      "total_frame": 1,
+      "columns": 1,
+      "frame_size": [130, 75],
+      "duration": 0.01,
+      "mask_color": [0, 255, 0, 255],
+      "isLoop": false
+    },
+    {
+      "id_name": "mr_2",
+      "name": "release",
+      "texture_path": "media/images/mr_2.png",
+      "total_frame": 16,
+      "columns": 1,
+      "frame_size": [130, 75],
+      "duration": 2,
+      "mask_color": [0, 255, 0, 255],
+      "isLoop": false
+    },
+    {
+      "id_name": "cff_1",
+      "name": "falling",
+      "texture_path": "media/images/cff_1.png",
+      "total_frame": 8,
+      "columns": 3,
+      "frame_size": [200, 260],
+      "duration": 0.3,
+      "mask_color": [0, 255, 0, 255],
+      "isLoop": false
+    },
+    {
+      "id_name": "cff_2",
+      "name": "hover",
+      "texture_path": "media/images/cff_2.png",
+      "total_frame": 1,
+      "columns": 1,
+      "frame_size": [200, 260],
+      "duration": 0.01,
+      "mask_color": [0, 255, 0, 255],
+      "isLoop": false
+    },
+    {
+      "id_name": "cff_3",
+      "name": "fill",
+      "texture_path": "media/images/cff_3.png",
+      "total_frame": 8,
+      "columns": 3,
+      "frame_size": [200, 260],
+      "duration": 0.8,
+      "mask_color": [0, 255, 0, 255],
+      "isLoop": true
+    },
+    {
+      "id_name": "cff_4",
+      "name": "press",
+      "texture_path": "media/images/cff_4.png",
+      "total_frame": 8,
+      "columns": 3,
+      "frame_size": [200, 260],
+      "duration": 0.6,
+      "mask_color": [0, 255, 0, 255],
+      "isLoop": false
+    },
+    {
+      "id_name": "cff_5",
+      "name": "release",
+      "texture_path": "media/images/cff_5.png",
+      "total_frame": 8,
+      "columns": 3,
+      "frame_size": [200, 260],
+      "duration": 0.6,
+      "mask_color": [0, 255, 0, 255],
+      "isLoop": false
+    },
+    {
+      "id_name": "cff_0",
+      "name": "wait",
+      "texture_path": "media/images/cff_1.png",
+      "total_frame": 1,
+      "columns": 1,
+      "frame_size": [200, 260],
+      "duration": 0.01,
+      "mask_color": [0, 255, 0, 255],
+      "isLoop": false
+    }
+  ]
+}
