@@ -1,19 +1,19 @@
 #include "Animator.h"
 #include "AssetManager.h"
+#include <fstream>
 
 int main() {
     AssetManager *am = AssetManager::getInstance();
-    Animation anim = {"wait", "media/images/cff_2.png",
-                      1, 1,
-                      {200, 260}, sf::seconds(0.1),
-                      {0, 255, 0}, false};
+    auto *aniM = AnimationManager::getInstance();
+    aniM->loadFile("media/animations.json");
+    auto anim = AnimationManager::getAnimation("b1_2");
     sf::Sprite sprite;
     Animator ar(sprite);
     ar.addAnimation(anim);
     std::unique_ptr<sf::RenderWindow> window = std::make_unique<sf::RenderWindow>(sf::VideoMode(1600, 550),
-                                                                                    "Test Manager",
-                                                                                    sf::Style::Titlebar |
-                                                                                    sf::Style::Close);
+                                                                                  "Test Manager",
+                                                                                  sf::Style::Titlebar |
+                                                                                  sf::Style::Close);
     sf::Clock clock;
     while (window->isOpen()) {
         auto dt = clock.restart();
@@ -30,5 +30,6 @@ int main() {
         window->display();
     }
     delete am;
+    delete aniM;
     return 0;
 }
