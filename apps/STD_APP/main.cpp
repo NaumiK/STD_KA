@@ -4,9 +4,7 @@
 
 #include "KA_UI.h"
 #include "Bank.h"
-#include "Status.h"
 #include "CoffeeChecker.h"
-#include "SoundAnimationChain.h"
 
 struct STD {
     std::unique_ptr<sf::RenderWindow> m_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(1600, 550),
