@@ -43,7 +43,6 @@ struct Animator : public Updateable {
     void switchAnimation(Animation *anim);
     bool switchAnimation(const std::string &name);
     std::string getCurrentAnimationName() const;
-    Animation &addAnimation(Animation &&anim);
     Animation &addAnimation(const Animation &anim);
     void restart();
     void update(const sf::Time &dt) override;

@@ -73,12 +73,6 @@ std::string Animator::getCurrentAnimationName() const {
     return "";
 }
 
-Animation &Animator::addAnimation(Animation &&anim) {
-    m_animations.emplace_back(anim);
-    if (current_anim == nullptr) switchAnimation(&m_animations.back());
-    return m_animations.back();
-}
-
 Animation &Animator::addAnimation(const Animation &anim) {
     m_animations.emplace_back(anim);
     if (current_anim == nullptr) switchAnimation(&m_animations.back());
